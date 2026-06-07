@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保育のかけはし AI版</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Yuji+Syuku&display=swap');
+:root{--bg:#f4ede2;--paper:#fffdf8;--ink:#3a3127;--soft:#827665;--accent:#d98a5f;--accent2:#6b8e6b;--line:#e3d8c5;--you:#e8f0e6;--them:#fcf0e6;--gold:#e0b84c;--bad:#b95d50;--shadow:0 6px 24px rgba(120,95,60,.13)}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Zen Maru Gothic',sans-serif;background:radial-gradient(circle at 12% 16%,rgba(217,138,95,.10),transparent 38%),radial-gradient(circle at 88% 82%,rgba(107,142,107,.10),transparent 40%),var(--bg);color:var(--ink);line-height:1.7;min-height:100vh}
+.wrap{max-width:930px;margin:0 auto;padding:24px 16px 56px}
+header{text-align:center;margin:12px 0 22px}
+.leaf{font-size:38px}
+h1{font-family:'Yuji Syuku',serif;font-size:28px;margin:4px 0}
+header p{margin:0;color:var(--soft);font-size:14px}
+.src{font-size:11px;color:var(--soft);margin-top:6px}
+.panel,.card,.chatbox,.result{background:var(--paper);border:1.5px solid var(--line);border-radius:18px;box-shadow:0 2px 9px rgba(120,95,60,.05)}
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:15px}
+.tab,.level-btn{border:1.5px solid var(--line);background:var(--paper);padding:8px 18px;border-radius:999px;cursor:pointer;color:var(--soft);font-family:inherit;font-weight:700}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:var(--shadow)}
+.level-btn.active{background:var(--accent2);border-color:var(--accent2);color:#fff;box-shadow:var(--shadow)}
+.levels{text-align:center;margin:-4px 0 16px;color:var(--soft);font-size:13px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:650px){.cards{grid-template-columns:1fr}.wrap{padding:16px 12px 48px}h1{font-size:24px}}
+.card{padding:15px 17px;cursor:pointer;transition:.18s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--accent)}
+.card-top{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.av{width:56px;height:56px;border-radius:50%;overflow:hidden;background:#fff7ec;border:1.5px solid var(--line);flex-shrink:0}
+.role{font-size:12px;color:var(--accent2);font-weight:700}
+.card h3{font-size:16px;margin:0}
+.card p{font-size:13px;color:var(--soft);margin:0 0 8px}
+.goal{font-size:11.5px;color:var(--accent);background:#fbf1e8;border-radius:8px;padding:4px 8px;display:inline-block}
+#chat-view{display:none}
+.chat-head{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px 18px 0 0;border-bottom:1.5px solid var(--line)}
+.chat-head .av{width:50px;height:50px}
+.meta b{font-size:15px}
+.meta div{font-size:12px;color:var(--soft)}
+.speaker{margin-left:auto;background:#eef4ec;border:1.5px solid var(--line);color:var(--accent2);border-radius:999px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;white-space:nowrap}
+.speaker.off{background:#fff;color:var(--soft)}
+.back{background:none;border:none;color:var(--soft);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px}
+.status{padding:9px 16px;border-bottom:1.5px solid var(--line);font-size:12.5px;color:var(--soft);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.bar{display:inline-block;width:84px;height:9px;background:var(--line);border-radius:99px;vertical-align:middle;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--gold));width:40%;transition:width .5s ease}
+.tip{font-size:12px;color:var(--soft);padding:10px 18px;background:#fbf6ed;border-bottom:1.5px solid var(--line)}
+.tip .pill{display:inline-block;background:#eef4ec;color:var(--accent2);border-radius:8px;padding:3px 9px;margin-top:5px;font-size:11.5px}
+.messages{min-height:300px;max-height:46vh;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:11px}
+.msg{max-width:80%;padding:10px 14px;border-radius:14px;font-size:14.5px;white-space:pre-wrap}
+.them{align-self:flex-start;background:var(--them);border-bottom-left-radius:4px}
+.say{border:none;background:rgba(255,255,255,.6);border-radius:50%;width:26px;height:26px;margin-left:8px;cursor:pointer;font-size:13px;vertical-align:middle;line-height:1}
+.say:hover{background:#fff}
+.you{align-self:flex-end;background:var(--you);border-bottom-right-radius:4px}
+.sys{align-self:center;background:transparent;color:var(--soft);font-size:12.5px;text-align:center;max-width:95%}
+.typing{font-style:italic;color:var(--soft)}
+.composer{border-top:1.5px solid var(--line);padding:12px;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;resize:none;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-family:inherit;font-size:14.5px;min-height:48px;max-height:130px;background:#fff}
+.composer textarea:focus{outline:none;border-color:var(--accent)}
+.btn{border:none;border-radius:12px;background:var(--accent);color:#fff;font-family:inherit;font-weight:700;padding:11px 16px;cursor:pointer;transition:.15s}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.secondary{background:var(--accent2)}
+.btn.ghost{background:#fff;color:var(--soft);border:1.5px solid var(--line)}
+.mic{width:48px;flex-shrink:0;font-size:18px;background:var(--you);color:var(--accent2)}
+.mic.rec{background:var(--accent);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.actions{text-align:center;margin:14px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.result{display:none;overflow:hidden;margin-top:14px}
+.banner{text-align:center;padding:22px 20px;background:linear-gradient(135deg,#f6f2ea,#f3efe6);position:relative;overflow:hidden}
+.banner.clear{background:linear-gradient(135deg,#eef6ea,#fcf3e0)}
+.banner h2{font-family:'Yuji Syuku',serif;margin:4px 0;font-size:24px}
+.banner .sub{font-size:13.5px;color:var(--soft)}
+.sprout{position:absolute;top:8px;font-size:18px;animation:rise 1.3s ease-out both}
+@keyframes rise{0%{transform:translateY(22px);opacity:0}100%{transform:translateY(0);opacity:.9}}
+.scores{padding:18px 20px 4px}
+.score-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.score-row .label{width:160px;font-size:13px}
+.stars{font-size:17px;letter-spacing:2px}
+.on{color:var(--gold)}.off{color:var(--line)}
+.review{padding:4px 20px 22px;font-size:14px}
+.review h4{color:var(--accent2);margin:14px 0 6px}
+.review p{margin:6px 0}
+.retry{text-align:center;padding:0 20px 22px}
+.note{font-size:11.5px;color:var(--soft);text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="leaf">🌿</div>
+  <h1>保育のかけはし ローカル版</h1>
+  <p>保育所保育指針にもとづく 対話シミュレーター（音声入力・読み上げ対応）</p>
+  <div class="src">Chromeで開き、ご自身のAnthropic APIキーを使って動かします</div>
+</header>
+
+<div id="key-panel" class="panel" style="padding:16px;margin-bottom:16px">
+  <b>🔑 APIキーの設定</b>
+  <p style="font-size:13px;color:var(--soft);margin:6px 0">
+    Anthropicの APIキー（<code>sk-ant-...</code>）を入力してください。キーはこの端末のブラウザ内にのみ保存され、ファイルやネットに送信されません（AI会話のためAnthropicへのみ送られます）。
+  </p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <input type="password" id="apikey" placeholder="sk-ant-..." style="flex:1;min-width:220px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px">
+    <button class="btn" id="saveKey">保存して開始</button>
+    <button class="btn ghost" id="clearKey">キーを消去</button>
+  </div>
+  <div id="keyStatus" style="font-size:12.5px;margin-top:8px"></div>
+</div>
+
+<div id="select-view" style="display:none">
+  <div class="tabs">
+    <button class="tab active" data-cat="parent">保護者対応</button>
+    <button class="tab" data-cat="child">子どもへの関わり</button>
+    <button class="tab" data-cat="leader">主任・園内研修</button>
+  </div>
+  <div class="levels">難易度：
+    <button class="level-btn active" data-level="easy">やさしい</button>
+    <button class="level-btn" data-level="normal">標準</button>
+    <button class="level-btn" data-level="hard">むずかしい</button>
+  </div>
+  <div class="cards" id="cards"></div>
+</div>
+
+<div id="chat-view" class="chatbox">
+  <div class="chat-head">
+    <div class="av" id="ch-av"></div>
+    <div class="meta"><b id="ch-name"></b><div id="ch-desc"></div></div>
+    <button class="speaker" id="speaker" title="相手の声の読み上げ ON/OFF">🔊 読み上げ ON</button>
+    <button class="back" id="back">← 場面をえらび直す</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="tip" id="goalbar"></div>
+  <div class="messages" id="messages"></div>
+  <div class="composer">
+    <textarea id="input" placeholder="保育士・主任として声をかけてください…"></textarea>
+    <button class="btn mic" id="mic" title="音声入力">🎤</button>
+    <button class="btn" id="send">送信</button>
+  </div>
+  <div class="actions">
+    <button class="btn secondary" id="feedback" disabled>対応を終えてふりかえる</button>
+    <button class="btn ghost" id="hint">ヒント</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="banner" id="banner">
+      <span class="sprout" style="left:20%;animation-delay:.1s">🌿</span>
+      <span class="sprout" style="left:42%;animation-delay:.3s">🍃</span>
+      <span class="sprout" style="left:64%;animation-delay:.2s">🌿</span>
+      <span class="sprout" style="left:82%;animation-delay:.4s">🍃</span>
+      <div style="font-size:38px" id="result-icon">🌱</div>
+      <h2 id="result-title"></h2>
+      <div class="sub" id="result-sub"></div>
+    </div>
+    <div class="scores" id="scores"></div>
+    <div class="review">
+      <h4>🌱 指針につながるふりかえり</h4>
+      <div id="review-body"></div>
+    </div>
+    <div class="retry"><button class="btn" id="retry">もう一度この場面を練習する</button></div>
+  </div>
+  <p class="note">※会話と評価はAIが生成します。実在する子ども・保護者の個人情報は入力しないでください。</p>
+</div>
+</div>
+
+<script>
+let API_KEY = '';
+// ============================================================
+//  APIキー管理（端末内 localStorage に保存）
+// ============================================================
+const KEY_STORE='hoiku_anthropic_key';
+function initKeyPanel(){
+  const input=document.getElementById('apikey');
+  const status=document.getElementById('keyStatus');
+  const panel=document.getElementById('key-panel');
+  const sel=document.getElementById('select-view');
+  let saved='';
+  try{ saved=localStorage.getItem(KEY_STORE)||''; }catch(e){}
+  if(saved){
+    API_KEY=saved;
+    status.innerHTML='<span style="color:#2e7d32">✓ キーが保存済みです。場面を選んで始められます。</span>';
+    sel.style.display='block';
+    input.value='';
+    input.placeholder='保存済み（変更する場合のみ入力）';
+  }
+  document.getElementById('saveKey').onclick=()=>{
+    const v=input.value.trim();
+    if(v){
+      if(!/^sk-ant-/.test(v)){
+        status.innerHTML='<span style="color:#b95d50">⚠ キーは sk-ant- で始まります。確認してください。</span>';
+        return;
+      }
+      API_KEY=v;
+      try{ localStorage.setItem(KEY_STORE,v); }catch(e){}
+      input.value=''; input.placeholder='保存済み（変更する場合のみ入力）';
+    }
+    if(!API_KEY){
+      status.innerHTML='<span style="color:#b95d50">⚠ キーを入力してください。</span>';
+      return;
+    }
+    status.innerHTML='<span style="color:#2e7d32">✓ 設定しました。場面を選んで始めましょう。</span>';
+    sel.style.display='block';
+    sel.scrollIntoView({behavior:'smooth'});
+  };
+  document.getElementById('clearKey').onclick=()=>{
+    API_KEY='';
+    try{ localStorage.removeItem(KEY_STORE); }catch(e){}
+    input.value=''; input.placeholder='sk-ant-...';
+    status.innerHTML='<span style="color:#827665">キーを消去しました。</span>';
+    sel.style.display='none';
+  };
+}
+
+// ============================================================
+//  人物SVGイラスト（大人/子どもを描き分け、表情・髪型を場面ごとに）
+// ============================================================
+function avatarSVG(opt){
+  const skin = opt.skin || '#f6d3b0';
+  const hairColor = opt.hairColor || opt.hair || '#4a3526';
+  const child = opt.age === 'child' || opt.role === 'child';
+  const sex = opt.sex || (opt.role==='child' ? (opt.female?'f':'m') : 'f');
+  const f = opt.f || 'warm';
+
+  const P = child
+    ? { cy:56, rx:30, ry:30, eyeY:60, eyeDX:13, eyeR:4.8, browY:50, mouthY:74, noseY:65, cheekY:66 }
+    : { cy:52, rx:26, ry:33, eyeY:51, eyeDX:11, eyeR:3.2, browY:42, mouthY:67, noseY:55, cheekY:60 };
+  const elx = 50 - P.eyeDX, erx = 50 + P.eyeDX, by = P.browY, ey = P.eyeY, my = P.mouthY;
+
+  const brows = {
+    worried:`<path d="M${elx-7} ${by+1} q7 -4 14 1"/><path d="M${erx-7} ${by+2} q7 -4 14 -1"/>`,
+    angry:  `<path d="M${elx-7} ${by-2} q7 5 14 1"/><path d="M${erx-7} ${by-1} q7 -5 14 -1"/>`,
+    sad:    `<path d="M${elx-7} ${by} q7 4 14 2"/><path d="M${erx-7} ${by+2} q7 -2 14 -2"/>`,
+    awkward:`<path d="M${elx-7} ${by} q7 -3 14 0"/><path d="M${erx-7} ${by-1} q7 -1 14 2"/>`,
+    warm:   `<path d="M${elx-6} ${by} q6 -3 12 0"/><path d="M${erx-6} ${by} q6 -3 12 0"/>`,
+    firm:   `<path d="M${elx-7} ${by-1} q7 1 14 -1"/><path d="M${erx-7} ${by-1} q7 -1 14 1"/>`,
+    cry:    `<path d="M${elx-7} ${by+1} q7 -5 14 -1"/><path d="M${erx-7} ${by} q7 -4 14 1"/>`,
+    upset:  `<path d="M${elx-7} ${by+1} q7 -3 14 0"/><path d="M${erx-7} ${by+1} q7 0 14 -3"/>`,
+    mad:    `<path d="M${elx-8} ${by-1} q8 6 15 1"/><path d="M${erx-7} ${by} q7 -6 15 -1"/>`,
+    down:   `<path d="M${elx-6} ${by+3} q6 0 12 2"/><path d="M${erx-6} ${by+5} q6 2 12 -1"/>`,
+    sleepy: `<path d="M${elx-6} ${by+1} q6 -1 12 0"/><path d="M${erx-6} ${by+1} q6 0 12 -1"/>`,
+    calm:   `<path d="M${elx-6} ${by} q6 -2 12 0"/><path d="M${erx-6} ${by} q6 -2 12 0"/>`
+  }[f] || `<path d="M${elx-6} ${by} q6 -3 12 0"/><path d="M${erx-6} ${by} q6 -3 12 0"/>`;
+
+  let eyes;
+  const closed = (f==='sleepy');
+  const narrow = (f==='mad'||f==='angry'||f==='firm');
+  if(closed){
+    eyes = `<g stroke="#3a2d22" stroke-width="2.4" fill="none" stroke-linecap="round"><path d="M${elx-5} ${ey} q5 3 10 0"/><path d="M${erx-5} ${ey} q5 3 10 0"/></g>`;
+  } else {
+    const r = narrow ? P.eyeR*0.8 : P.eyeR;
+    const pupil = `<circle cx="${elx}" cy="${ey}" r="${r}"/><circle cx="${erx}" cy="${ey}" r="${r}"/>`;
+    const hi = child ? `<circle cx="${elx+1.6}" cy="${ey-1.6}" r="1.4" fill="#fff"/><circle cx="${erx+1.6}" cy="${ey-1.6}" r="1.4" fill="#fff"/>` : '';
+    eyes = `<g fill="#3a2d22">${pupil}</g>${hi}`;
+    if(narrow){
+      eyes += `<g stroke="#3a2d22" stroke-width="2" fill="none" stroke-linecap="round"><path d="M${elx-5} ${ey-3} q5 -1 10 1"/><path d="M${erx-5} ${ey-2} q5 1 10 -1"/></g>`;
+    }
+  }
+
+  let tears='';
+  if(f==='cry') tears=`<path d="M${elx-1} ${ey+4} q-2 7 0 12" stroke="#7cc2e0" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M${erx+1} ${ey+4} q2 7 0 12" stroke="#7cc2e0" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  else if(f==='down'||f==='sad') tears=`<circle cx="${elx-1}" cy="${ey+6}" r="2" fill="#9bd0e8"/>`;
+
+  const mouth = {
+    worried:`<path d="M${50-7} ${my} q7 -3 14 0"/>`,
+    angry:  `<path d="M${50-8} ${my+2} q8 -6 16 0"/>`,
+    sad:    `<path d="M${50-7} ${my+2} q7 -5 14 0"/>`,
+    awkward:`<path d="M${50-7} ${my} q7 2 14 -1"/>`,
+    warm:   `<path d="M${50-8} ${my-1} q8 6 16 0"/>`,
+    firm:   `<path d="M${50-7} ${my} q7 0 14 0"/>`,
+    cry:    `<path d="M${50-7} ${my+1} q7 8 14 0" fill="#c97b6e"/>`,
+    upset:  `<path d="M${50-7} ${my+1} q7 -4 14 0"/>`,
+    mad:    `<path d="M${50-8} ${my+1} q8 7 16 0" fill="#c97b6e"/>`,
+    down:   `<path d="M${50-6} ${my+1} q6 -4 12 0"/>`,
+    sleepy: `<ellipse cx="50" cy="${my}" rx="3.5" ry="4.5" fill="#c97b6e"/>`,
+    calm:   `<path d="M${50-7} ${my-1} q7 4 14 0"/>`
+  }[f] || `<path d="M${50-7} ${my-1} q7 5 14 0"/>`;
+
+  const cheek = (child || f==='cry' || f==='angry')
+    ? `<circle cx="${elx-6}" cy="${P.cheekY}" r="5.5" fill="#f4a6a0" opacity=".5"/><circle cx="${erx+6}" cy="${P.cheekY}" r="5.5" fill="#f4a6a0" opacity=".5"/>` : '';
+  const nose = `<path d="M50 ${P.noseY-3} q2 5 0 8" stroke="#d8a884" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+
+  let hairBack='', hair='';
+  const top=P.cy-P.ry, Lx=50-P.rx, Rx=50+P.rx;
+  if(child){
+    if(sex==='f'){
+      hairBack=`<path d="M${Lx-5} ${P.cy+2} Q${Lx-7} ${top+4} 50 ${top-4} Q${Rx+7} ${top+4} ${Rx+5} ${P.cy+2} Q${Rx+4} ${P.cy+10} ${Rx-1} ${P.cy+8} Q${Rx-2} ${top+12} 50 ${top+8} Q${Lx+2} ${top+12} ${Lx+1} ${P.cy+8} Q${Lx-4} ${P.cy+10} ${Lx-5} ${P.cy+2} Z" fill="${hairColor}"/>`;
+      hair=`<ellipse cx="${Lx-2}" cy="${top+2}" rx="5" ry="6" fill="${hairColor}"/><ellipse cx="${Rx+2}" cy="${top+2}" rx="5" ry="6" fill="${hairColor}"/>`;
+    } else {
+      hair=`<path d="M${Lx+1} ${top+13} Q50 ${top-4} ${Rx-1} ${top+13} q-6 5 -12 2 q-5 4 -10 0 q-5 3 -10 -2 Z" fill="${hairColor}"/>`;
+    }
+  } else {
+    if(sex==='f'){
+      hairBack=`<path d="M${Lx-4} ${P.cy-6} Q${Lx-8} ${top+2} 50 ${top-5} Q${Rx+8} ${top+2} ${Rx+4} ${P.cy-6} L${Rx+5} ${P.cy+P.ry-4} Q${Rx+2} ${P.cy+P.ry+2} ${Rx-3} ${P.cy+P.ry-2} Q${Rx-2} ${P.cy} ${Rx-1} ${P.cy-4} Q${Rx-3} ${top+10} 50 ${top+6} Q${Lx+3} ${top+10} ${Lx+1} ${P.cy-4} Q${Lx+2} ${P.cy} ${Lx+3} ${P.cy+P.ry-2} Q${Lx-2} ${P.cy+P.ry+2} ${Lx-5} ${P.cy+P.ry-4} Z" fill="${hairColor}"/>`;
+      hair=`<path d="M${Lx+1} ${top+13} Q50 ${top-3} ${Rx-1} ${top+13} q-4 6 -10 5 q-${P.rx-5} -4 -${P.rx*2-10} 0 q-6 1 -10 -5 Z" fill="${hairColor}"/>`;
+    } else {
+      hair=`<path d="M${Lx+1} ${top+14} Q50 ${top-2} ${Rx-1} ${top+14} q-3 5 -8 4 q-${P.rx-6} -3 -${P.rx*2-12} 0 q-5 1 -8 -4 Z" fill="${hairColor}"/>`;
+      if(opt.beard) hair+=`<path d="M${50-11} ${my+1} q11 12 22 0 q-3 7 -11 7 q-8 0 -11 -7 Z" fill="${hairColor}" opacity=".8"/>`;
+    }
+  }
+
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    ${hairBack}
+    <ellipse cx="50" cy="${P.cy}" rx="${P.rx}" ry="${P.ry}" fill="${skin}"/>
+    <ellipse cx="${Lx+2}" cy="${P.cy+4}" rx="4" ry="6" fill="${skin}"/>
+    <ellipse cx="${Rx-2}" cy="${P.cy+4}" rx="4" ry="6" fill="${skin}"/>
+    ${hair}${cheek}${nose}
+    <g stroke="${hairColor}" stroke-width="2.4" stroke-linecap="round" fill="none">${brows}</g>
+    ${eyes}${tears}
+    <g stroke="#9a5b4a" stroke-width="2.6" stroke-linecap="round" fill="none">${mouth}</g>
+  </svg>`;
+}
+
+// ============================================================
+//  指針・評価観点
+// ============================================================
+const AXES = {
+  parent:['気持ちの受け止め','状況への個別配慮','具体的で誠実な説明','信頼関係づくり'],
+  child:['情緒の安定','気持ちの言語化','主体性の尊重','応答的な関わり'],
+  leader:['受容的な指導','課題の整理','具体的な助言','成長を支える姿勢']
+};
+const GUIDE = {
+  parent:'第4章「子育て支援」：保護者の気持ちを受け止め、相互理解を基盤に、家庭の状況に応じて支える。',
+  child:'第1章「養護」：子どものありのままを受け止め、情緒の安定を図り、主体として尊重する。',
+  leader:'園内研修・職員育成：責めるのではなく、実践を振り返りながら専門性の向上につなげる。'
+};
+
+// ============================================================
+//  シナリオ（保護者6・子ども9・主任3）
+// ============================================================
+const S = {
+  parent:[
+    {id:'p1',name:'たくみくんのお母さん',role:'保護者',title:'園でのケガの報告',desc:'転んで擦り傷を作ったことを伝える場面',goal:'不安を和らげ、状況に納得してもらう',
+     av:{sex:'f',f:'worried',hairColor:'#5a4636'},
+     persona:'あなたは4歳たくみの母親。お迎え時、子どもの膝に絆創膏があるのに気づき「どうしてケガを？ちゃんと見てくれていたの？」と心配と少しの不信を抱いている。誠実で具体的な説明・謝意・今後の配慮が示されれば落ち着き感謝する。あいまい・他人事の対応だと不安と不信が募る。'},
+    {id:'p2',name:'さくらちゃんのお父さん',role:'保護者',title:'友だちとのトラブルへの苦情',desc:'叩かれたと聞き、強めに抗議される場面',goal:'怒りを受け止め、園の方針を理解してもらう',
+     av:{sex:'m',f:'angry',hairColor:'#222'},
+     persona:'あなたは5歳さくらの父親。娘が友だちに叩かれたと聞き、強い口調で「相手は誰だ、園はどう指導しているのか」と抗議に来た。最初は感情的だが、傾聴・事実の冷静な共有・再発防止の姿勢が示されれば徐々に落ち着く。防御的・言い訳がましい対応だと一層怒る。相手の子の名前を執拗に求めるが、園は基本的に明かさない方針。'},
+    {id:'p3',name:'はるとくんのお母さん',role:'保護者',title:'発達の心配の相談',desc:'言葉の遅れへの不安を相談される場面',goal:'不安を受け止め、前向きに見守れるようにする',
+     av:{sex:'f',f:'sad',hairColor:'#4a3a2a'},
+     persona:'あなたは3歳はるとの母親。言葉が遅い気がして「私の関わり方が悪いのでは」と自分を責め、不安を抱えている。安易な「大丈夫」より、園での具体的な様子の共有・親を否定しない姿勢・必要時の相談先案内に安心する。突き放されると孤立感が深まる。'},
+    {id:'p4',name:'ゆいちゃんのお母さん',role:'保護者',title:'お迎えの遅刻が続く相談',desc:'遅刻が続く保護者に配慮しつつ伝える場面',goal:'責められたと感じず、解決策を一緒に考える',
+     av:{sex:'f',f:'awkward',hairColor:'#3a2d22'},
+     persona:'あなたは4歳ゆいの母親。仕事が終わらずお迎えの遅刻が続き、申し訳なく思いつつ事情も抱えている。責められると萎縮し心を閉ざす。ねぎらい・子どもが待っていた様子・一緒に解決策を考える姿勢には安心し協力的になる。'},
+    {id:'p5',name:'けんとくんのお父さん',role:'保護者',title:'父親からの関わり方の相談',desc:'子どもとの接し方や園での様子を尋ねられる場面',goal:'父親が前向きに関われる手応えを持つ',
+     av:{sex:'m',f:'warm',hairColor:'#2e2620',beard:true},
+     persona:'あなたは5歳けんとの父親。家での関わり方に少し自信がなく、園での様子を知りたい。具体的なエピソードや家庭でできる関わりの提案に喜び、前向きになる。一般論だけだと物足りなさを感じる。'},
+    {id:'p6',name:'みなとくんのお母さん',role:'保護者',title:'くり返し苦情を訴える保護者',desc:'強い口調の苦情に誠実に対応する場面',goal:'状況説明と今後の方針を伝え、理解を得る',
+     av:{sex:'f',f:'firm',hairColor:'#111'},
+     persona:'あなたは4歳みなとの母親。これまで何度も苦情を訴えてきた。「またですか、園はちゃんと管理しているの」と強い口調で不信感が強いが、根底には「ちゃんと見てもらえているか」という不安がある。傾聴・具体的状況説明・今後の方針が丁寧に示されれば理解を示す。受け流す対応だと不信が深まる。'}
+  ],
+  child:[
+    {id:'c1',name:'4歳 りく',role:'子ども',title:'おもちゃの取り合い',desc:'取り合いで泣いている子への仲裁',goal:'落ち着いて気持ちを話し、次の行動へ向かう',
+     av:{sex:'m',role:'child',f:'upset',hairColor:'#3a2d22'},
+     persona:'あなたは4歳りく。電車のおもちゃを友だちと取り合い「ぼくが先だったのに！取られた！」と泣いて怒っている。気持ちを否定されると一層興奮。気持ちを受け止め代弁してもらえると落ち着き、順番などの提案を聞ける。'},
+    {id:'c2',name:'3歳 みお',role:'子ども',title:'登園しぶり',desc:'朝、母と離れたくなくて泣く子への対応',goal:'安心して活動に向かえる',
+     av:{sex:'f',role:'child',f:'cry',hairColor:'#4a3526'},
+     persona:'あなたは3歳みお。朝、母と離れたくなくて「ママがいい、おうちかえる」と大泣き。「泣かないで」と言われると余計に泣く。気持ちを受け止め、安心できる声かけや楽しみの提示で少しずつ落ち着く。'},
+    {id:'c3',name:'5歳 そうた',role:'子ども',title:'お片づけをしたがらない',desc:'遊びをやめたくない子への声かけ',goal:'納得して自分から片づけに向かう',
+     av:{sex:'m',role:'child',f:'firm',hairColor:'#222'},
+     persona:'あなたは5歳そうた。ブロックに夢中で「やだ！まだあそぶ！」と片づけを拒否。頭ごなしの命令には反発。気持ちへの理解・見通し（あと何分等）・遊びとして促すなどで自分から動ける。'},
+    {id:'c4',name:'4歳 あおい',role:'子ども',title:'「できない」と諦める子',desc:'制作活動で諦める子への励まし',goal:'自信を取り戻し、もう一度挑戦する',
+     av:{sex:'f',role:'child',f:'down',hairColor:'#3a2d22'},
+     persona:'あなたは4歳あおい。制作がうまくいかず「できない、もうやらない」とうつむく。「がんばって」だけだと心を閉ざす。できている所を具体的に認められ、小さな成功を支えられると再び挑戦する。'},
+    {id:'c5',name:'2歳 ひなた',role:'子ども',title:'友だちを噛んでしまった',desc:'言葉にできず噛んだ子への対応',goal:'気持ちを受け止め、別の伝え方に気づく',
+     av:{sex:'m',role:'child',f:'mad',hairColor:'#3a2d22'},
+     persona:'あなたは2歳ひなた。おもちゃを取られそうになり、うまく言葉にできず「いや！ぼくの！」と噛んでしまった。叱られても理由が分からず混乱する。気持ちを代弁され、噛むのではない伝え方を穏やかに示されると落ち着く。短い片言で話す。'},
+    {id:'c6',name:'3歳 ことね',role:'子ども',title:'午睡で眠れない子',desc:'眠れず落ち着かない子への関わり',goal:'安心して体を休める',
+     av:{sex:'f',role:'child',f:'sleepy',hairColor:'#4a3526'},
+     persona:'あなたは3歳ことね。お昼寝の時間に眠くなくて「ねむれない、つまんない」と落ち着かない。無理に「寝なさい」と言われると嫌がる。気持ちを受け止め、横になって休む・静かに過ごす選択肢を示されると落ち着く。'},
+    {id:'c7',name:'4歳 そら',role:'子ども',title:'給食を食べたがらない子',desc:'苦手な食材がある子への声かけ',goal:'プレッシャーなく一口挑戦できる',
+     av:{sex:'m',role:'child',f:'awkward',hairColor:'#222'},
+     persona:'あなたは4歳そら。ピーマンが苦手で「きらい、たべたくない」と食が進まない。「全部食べなさい」と言われると泣きそうになる。気持ちを認められ、一口だけ・楽しい雰囲気など無理のない関わりで少し挑戦できる。'},
+    {id:'c8',name:'5歳 だいき',role:'子ども',title:'くり返し手が出てしまう子',desc:'思い通りにいかず手が出る子への関わり',goal:'手が出る前の気持ちに気づき別の方法で表す',
+     av:{sex:'m',role:'child',f:'mad',hairColor:'#2a2018'},
+     persona:'あなたは5歳だいき。積み木を崩され「だって崩されたんだもん！むかついた！」と友だちを叩いてしまった。これがくり返されている。頭ごなしに叱られると反発し心を閉ざす。気持ちを理解され、何が嫌だったか一緒に整理し別の方法を考えてもらえると少しずつ受け止める。'},
+    {id:'c9',name:'5歳 ゆうき',role:'子ども',title:'個別配慮が必要な子',desc:'切り替えが苦手で固まる子への関わり',goal:'安心して見通しを持ち、自分のペースで動く',
+     av:{sex:'m',role:'child',f:'awkward',hairColor:'#222'},
+     persona:'あなたは5歳ゆうき。活動の切り替えが苦手で、急な変更があると「……やだ。わからない」と固まったり混乱したりする。急かされると余計に混乱する。事前の予告・見通し・安心できる声かけがあると落ち着いて行動できる。'}
+  ],
+  leader:[
+    {id:'l1',name:'若手保育士',role:'職員',title:'若手保育士への指導',desc:'保護者対応で落ち込む職員への声かけ',goal:'責めずに振り返り、次の実践につなげる',
+     av:{sex:'f',f:'down',hairColor:'#3a2d22'},
+     persona:'あなたは入職2年目の若手保育士。保護者に強く言われて「もう自信がありません」と落ち込んでいる。主任（相手）に責められると一層萎縮する。気持ちを受け止められ、事実を一緒に整理し、次に使える具体的な言葉や方法を一緒に考えてもらえると前向きになれる。'},
+    {id:'l2',name:'担任保育士',role:'職員',title:'保護者対応の助言',desc:'説明が苦手な職員に助言する場面',goal:'改善点を具体化し、前向きに試せるようにする',
+     av:{sex:'f',f:'awkward',hairColor:'#4a3526'},
+     persona:'あなたは担任保育士。保護者に「何をどこまで伝えればいいのか、いつも迷う」と相談している。抽象的な助言だと実践に移せず困る。整理の仕方・具体例・安心できる声かけを示されると実践への手応えを持てる。'},
+    {id:'l3',name:'研修参加者',role:'職員',title:'園内研修：子どもの権利',desc:'子どもの権利を保育実践に結びつける場面',goal:'日常場面に置き換えて理解を深める',
+     av:{sex:'m',f:'warm',hairColor:'#2e2620'},
+     persona:'あなたは園内研修の参加者。「子どもの権利が大切なのは分かるが、日々の保育でどう考えればいいのか」と問いかけている。抽象論だけだと腑に落ちない。日常の具体場面（選択の尊重・意見を聞く等）に置き換えて説明されると深く理解できる。'}
+  ]
+};
+
+// ============================================================
+//  状態管理
+// ============================================================
+let cat='parent', level='easy', cur=null, turns=0, history=[];
+let state={trust:40, calm:40};
+const cards=document.getElementById('cards'), msgs=document.getElementById('messages');
+const inputEl=document.getElementById('input'), sendBtn=document.getElementById('send'), fbBtn=document.getElementById('feedback');
+
+function levelBase(){ return level==='hard'?20 : level==='normal'?30 : 42; }
+function levelLabel(){ return level==='hard'?'むずかしい' : level==='normal'?'標準' : 'やさしい'; }
+
+function renderCards(){
+  cards.innerHTML='';
+  S[cat].forEach(s=>{
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML=`<div class="card-top"><div class="av">${avatarSVG(s.av)}</div><div><div class="role">${s.role}</div><h3>${s.title}</h3></div></div><p>${s.desc}</p><span class="goal">🎯 ${s.goal}</span>`;
+    d.onclick=()=>start(s); cards.appendChild(d);
+  });
+}
+renderCards();
+initKeyPanel();
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;renderCards();});
+document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
+
+function start(s){
+  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:levelBase()};
+  document.getElementById('select-view').style.display='none';
+  document.getElementById('chat-view').style.display='block';
+  document.getElementById('ch-av').innerHTML=avatarSVG(s.av);
+  document.getElementById('ch-name').textContent=s.name;
+  document.getElementById('ch-desc').textContent=s.role+'・'+s.title;
+  document.getElementById('goalbar').innerHTML=`🎯 <b>この場面のゴール：</b>${s.goal}<br><span class="pill">${GUIDE[cat]}</span>`;
+  document.getElementById('result').style.display='none';
+  fbBtn.disabled=true;
+  msgs.innerHTML='';
+  add('sys','「'+s.title+'」の場面です（難易度：'+levelLabel()+'）。あなたは保育士・主任として声をかけてみましょう。');
+  updateStatus();
+  window.scrollTo(0,0);
+  aiTurn(true);
+}
+document.getElementById('back').onclick=()=>{if(window.speechSynthesis)window.speechSynthesis.cancel();document.getElementById('chat-view').style.display='none';document.getElementById('select-view').style.display='block';};
+document.getElementById('retry').onclick=()=>start(cur);
+
+function add(cls,text){
+  const m=document.createElement('div'); m.className='msg '+cls;
+  if(cls==='them'){
+    const span=document.createElement('span'); span.textContent=text; m.appendChild(span);
+    const b=document.createElement('button'); b.className='say'; b.textContent='🔊'; b.title='読み上げる';
+    b.onclick=()=>speak(text,true);
+    m.appendChild(b);
+  } else {
+    m.textContent=text;
+  }
+  msgs.appendChild(m); msgs.scrollTop=msgs.scrollHeight; return m;
+}
+function updateStatus(){
+  state.calm=Math.max(0,Math.min(100,state.calm));
+  state.trust=Math.max(0,Math.min(100,state.trust));
+  document.getElementById('status').innerHTML=`安心度 <span class="bar"><i style="width:${state.calm}%"></i></span> 信頼度 <span class="bar"><i style="width:${state.trust}%"></i></span> ターン ${turns}`;
+}
+
+// ============================================================
+//  Claude API（ローカル：自分のキーをブラウザから直接利用）
+// ============================================================
+async function callClaude(system, messages, maxTokens){
+  if(!API_KEY) throw new Error('NO_KEY');
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key": API_KEY,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body:JSON.stringify({model:"claude-sonnet-4-6", max_tokens:maxTokens||1000, system, messages})
+  });
+  if(!res.ok){
+    let detail='';
+    try{ const j=await res.json(); detail=(j.error&&j.error.message)||''; }catch(e){}
+    throw new Error('HTTP_'+res.status+(detail?(': '+detail):''));
+  }
+  const data=await res.json();
+  return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+}
+
+const roleWord=()=> cat==='parent'?'保護者' : cat==='child'?'子ども' : '職員';
+
+async function aiTurn(isOpening){
+  const typing=document.createElement('div'); typing.className='msg them typing'; typing.textContent='…';
+  msgs.appendChild(typing); msgs.scrollTop=msgs.scrollHeight;
+
+  const diffNote = level==='hard'
+    ? 'この人物は今かなり感情的・防御的で、心を開くまでに時間がかかります。簡単には納得せず、表面的な対応には手応えを返さないでください。'
+    : level==='normal'
+    ? 'この人物は標準的な反応をします。適切な対応には応じ、不十分な対応には率直に反応します。'
+    : 'この人物は比較的素直で、誠実な対応には比較的早く応じます。';
+
+  const speak = cat==='child'
+    ? '子どもらしい、やさしく短い話し言葉で話してください。難しい言葉は使いません。'
+    : cat==='leader'
+    ? '保育園の職員として、同僚に相談する自然な口調で話してください。'
+    : '保護者として自然な口調で話してください。';
+
+  const system=`あなたは保育士研修シミュレーターの中で、${roleWord()}の役を演じます。
+役の設定：${cur.persona}
+
+難易度設定：${diffNote}
+
+ルール：
+- 必ずその人物になりきり、一人称のセリフだけを返してください。ナレーション・説明・カッコ書きは禁止。
+- 1〜3文の自然な話し言葉で。${speak}
+- 相手（保育士・主任役）の対応の質に応じて感情をリアルに変化させてください。よい対応には和らぎ、不適切な対応にはそれらしく反応します。
+- あなたは保育士・主任役を演じてはいけません。あくまで${roleWord()}です。
+- 会話の最後に、現在のあなたの心境を表す数値を必ず次の形式で1行だけ付けてください（この行はセリフではありません）：
+[STATE calm=±N trust=±N]
+calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜+15）。相手の対応がよければプラス、不適切ならマイナス。`;
+
+  let apiMessages;
+  if(isOpening){
+    apiMessages=[{role:'user',content:'（保育士・主任があなたの前にいます。この場面で、あなたから最初のひとことを話しかけてください。）'}];
+  } else {
+    apiMessages=history.map(h=>({role:h.role==='them'?'assistant':'user', content:h.content}));
+  }
+
+  try{
+    let reply=await callClaude(system, apiMessages);
+    typing.remove();
+    // [STATE ...] を抽出して本文から除去
+    const m=reply.match(/\[STATE\s+calm=([+-]?\d+)\s+trust=([+-]?\d+)\]/i);
+    if(m){
+      state.calm+=parseInt(m[1],10); state.trust+=parseInt(m[2],10);
+      reply=reply.replace(m[0],'').trim();
+    }
+    const text=reply||'…';
+    const bubble=add('them',text);
+    history.push({role:'them',content:text});
+    updateStatus();
+    if(isOpening && synth && !audioUnlocked){
+      // 開幕の自動再生はブラウザ制限で鳴らないため、押せば聞ける案内を一度だけ出す
+      add('sys','💡 各セリフの右の🔊を押すと、相手の声で読み上げます（ヘッダーの「読み上げ」をONにすると以降は自動再生）。');
+    } else {
+      speak(text);
+    }
+  }catch(e){
+    typing.remove();
+    const msg=String(e&&e.message||e);
+    if(msg==='NO_KEY'){
+      add('sys','⚠ APIキーが設定されていません。画面上部でキーを保存してください。');
+    } else if(/HTTP_401|authentication/i.test(msg)){
+      add('sys','⚠ APIキーが正しくないか、無効です。キーを確認して再設定してください。');
+    } else if(/HTTP_429/i.test(msg)){
+      add('sys','⚠ 利用量の上限に達したか、混雑しています。少し待って再度お試しください。');
+    } else if(/Failed to fetch|NetworkError|CORS/i.test(msg)){
+      add('sys','⚠ 通信に失敗しました。ファイルをダウンロードしてChromeで直接開いているか確認してください（このページがインターネットに接続できる必要があります）。');
+    } else {
+      add('sys','⚠ エラーが発生しました（'+msg+'）。少し待って再度お試しください。');
+    }
+  }
+}
+
+async function sendMessage(){
+  const txt=inputEl.value.trim();
+  if(!txt||!cur) return;
+  audioUnlocked=true;   // 送信＝ユーザー操作。以降の相手セリフは自動読み上げ可
+  inputEl.value=''; inputEl.style.height='auto';
+  add('you',txt); history.push({role:'you',content:txt});
+  turns++; fbBtn.disabled=false;
+  await aiTurn(false);
+}
+sendBtn.onclick=sendMessage;
+inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+inputEl.addEventListener('input',()=>{inputEl.style.height='auto';inputEl.style.height=Math.min(inputEl.scrollHeight,130)+'px';});
+
+// ヒント
+document.getElementById('hint').onclick=()=>{
+  if(!cur)return;
+  const tips={
+    parent:'まず相手の気持ちを受け止め（共感）、次に状況を具体的に説明し、最後に今後の見通し・対応を伝える順が効果的です。',
+    child:'気持ちを言葉にして代弁し（「〜だったんだね」）、安心させてから、子ども自身が選べる提案をしてみましょう。',
+    leader:'責めずにまず受け止め、起きたことを一緒に整理し、次に試せる具体的な方法を一緒に考えると前向きになれます。'
+  };
+  add('sys','💡 ヒント：'+tips[cat]+'　この場面のゴールは「'+cur.goal+'」です。');
+};
+
+// ============================================================
+//  音声入力（診断強化版）
+// ============================================================
+let recognition=null, recording=false, micReady=false;
+const micBtn=document.getElementById('mic');
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+if(SR){
+  recognition=new SR();
+  recognition.lang='ja-JP';
+  recognition.interimResults=false;
+  recognition.continuous=false;
+  recognition.onresult=e=>{
+    const t=e.results[0][0].transcript;
+    inputEl.value+=t; inputEl.dispatchEvent(new Event('input'));
+  };
+  recognition.onend=()=>{recording=false;micBtn.classList.remove('rec');};
+  recognition.onerror=ev=>{
+    recording=false; micBtn.classList.remove('rec');
+    const err=ev.error||'unknown';
+    if(err==='not-allowed'||err==='service-not-allowed'){
+      add('sys','⚠ マイクの使用が許可されていません。アドレスバー左のアイコンからマイクを「許可」に変更してください。なお file:// で開いている場合、Chromeはマイクを許可しないことがあります（下の対処を参照）。');
+    } else if(err==='no-speech'){
+      add('sys','🎤 音声が聞き取れませんでした。もう一度マイクを押して、はっきり話してみてください。');
+    } else if(err==='audio-capture'){
+      add('sys','⚠ マイクが見つかりません。マイクが接続・有効になっているか確認してください。');
+    } else if(err==='network'){
+      add('sys','⚠ 音声認識はネット接続が必要です。接続を確認してください。');
+    } else {
+      add('sys','⚠ 音声入力エラー（'+err+'）。もう一度お試しください。');
+    }
+  };
+}else{
+  micBtn.style.display='none';
+}
+
+// 事前にマイク許可を明示的に取得（file://対策の診断つき）
+async function ensureMic(){
+  if(micReady) return true;
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      stream.getTracks().forEach(t=>t.stop()); // 許可確認だけして止める
+      micReady=true;
+      return true;
+    }catch(e){
+      const name=e&&e.name||'';
+      if(name==='NotAllowedError'||name==='SecurityError'){
+        add('sys','⚠ マイクへのアクセスが許可されませんでした。');
+        if(location.protocol==='file:'){
+          add('sys','💡 このページは file:// で開かれています。Chromeはこの形式だとマイクを許可しないことがあります。対処：このファイルを簡易サーバー経由（http://localhost）で開くと許可できます。手順を案内できます。');
+        } else {
+          add('sys','💡 アドレスバー左の🔒や🎤アイコンを押し、マイクを「許可」にして、もう一度お試しください。');
+        }
+        return false;
+      }
+      if(name==='NotFoundError'){
+        add('sys','⚠ マイクが見つかりません。接続を確認してください。');
+        return false;
+      }
+      // getUserMedia自体が使えない場合でも、認識は試す
+      return true;
+    }
+  }
+  return true;
+}
+
+micBtn.onclick=async()=>{
+  if(!recognition){ add('sys','このブラウザは音声入力に対応していません（Chrome/Edge推奨）。'); return; }
+  if(recording){ recognition.stop(); return; }
+  const ok=await ensureMic();
+  if(!ok) return;
+  try{
+    recognition.start(); recording=true; micBtn.classList.add('rec');
+    add('sys','🎤 録音中です。話し終えたら、もう一度マイクを押すか、少し待つと文字になります。');
+  }catch(e){
+    recording=false; micBtn.classList.remove('rec');
+    add('sys','⚠ 音声入力を開始できませんでした（'+(e&&e.message||e)+'）。');
+  }
+};
+
+// ============================================================
+//  読み上げ（音声合成 SpeechSynthesis）
+// ============================================================
+let speakOn=true;
+let audioUnlocked=false;   // ユーザー操作後にtrue（自動再生はそれ以降のみ）
+let jaVoices=[];
+const synth=window.speechSynthesis;
+
+function loadVoices(){
+  if(!synth) return;
+  const all=synth.getVoices();
+  jaVoices=all.filter(v=>/ja|JP/i.test(v.lang));
+}
+if(synth){
+  loadVoices();
+  synth.onvoiceschanged=loadVoices;
+  // 一部ブラウザは初回getVoicesが空。少し遅らせて再取得
+  setTimeout(loadVoices,300);
+  setTimeout(loadVoices,1200);
+}
+
+const speakerBtn=document.getElementById('speaker');
+if(!synth){ speakerBtn.style.display='none'; }
+speakerBtn.onclick=()=>{
+  audioUnlocked=true;            // ボタン操作で音声を解禁
+  speakOn=!speakOn;
+  speakerBtn.classList.toggle('off',!speakOn);
+  speakerBtn.textContent= speakOn ? '🔊 読み上げ ON' : '🔇 読み上げ OFF';
+  if(!speakOn && synth) synth.cancel();
+};
+
+// 役柄に応じて声色（高さ・速さ）を変える
+// manual=true のときはユーザーが🔊を押した手動再生（speakOnやunlock状態に関係なく鳴らす）
+function speak(text, manual){
+  if(!synth || !text) return;
+  if(!manual && (!speakOn || !audioUnlocked)) return;  // 自動再生は解禁後かつON時のみ
+  if(manual) audioUnlocked=true;
+  if(!jaVoices.length) loadVoices();
+  try{
+    synth.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='ja-JP';
+    if(jaVoices.length){
+      u.voice = cat==='child'
+        ? (jaVoices.find(v=>/female|woman|Kyoko|O-ren|Otoya|Sayaka/i.test(v.name)) || jaVoices[0])
+        : jaVoices[0];
+    }
+    if(cat==='child'){ u.pitch=1.6; u.rate=1.05; }
+    else if(cat==='leader'){ u.pitch=1.0; u.rate=1.0; }
+    else { u.pitch=1.08; u.rate=0.98; }
+    u.onerror=()=>{ if(manual) add('sys','このブラウザでは音声読み上げを再生できませんでした（Chrome/Edge/Safariの最新版をお試しください）。'); };
+    synth.speak(u);
+  }catch(e){
+    if(manual) add('sys','音声読み上げの再生に失敗しました。');
+  }
+}
+
+// ============================================================
+//  ふりかえり（AI評価）
+// ============================================================
+fbBtn.onclick=async()=>{
+  if(!cur)return;
+  fbBtn.disabled=true; fbBtn.textContent='ふりかえりを作成中…';
+  const axes=AXES[cat];
+  const transcript=history.map(h=>(h.role==='them'?roleWord():'保育士・主任')+'：'+h.content).join('\n');
+  const system=`あなたは保育の専門家で、保育所保育指針解説（厚生労働省）に精通した研修講師です。
+保育士・主任役の対応を、温かくも具体的に評価してください。必ず次のJSON形式のみで出力し、前後に文章やマークダウンを付けないこと。
+
+{
+ "scores":[4つの整数(各1〜5)。順に「${axes[0]}」「${axes[1]}」「${axes[2]}」「${axes[3]}」],
+ "good":"良かった点を具体的に(120字程度)",
+ "advice":"さらに良くするための助言。指針の考え方にふれつつ具体的に(150字程度)",
+ "example":"この場面で効果的な声かけ例を1つ(50字程度、かぎかっこ付き)",
+ "encourage":"励ましのひとこと(30字程度)"
+}`;
+  const userMsg=`【場面】${cur.title}（${roleWord()}対応・難易度${levelLabel()}）
+【ゴール】${cur.goal}
+【指針の視点】${GUIDE[cat]}
+【やりとり】
+${transcript}
+
+上記の保育士・主任役の対応を評価してください。`;
+  try{
+    const raw=await callClaude(system,[{role:'user',content:userMsg}],1200);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    showResult(JSON.parse(clean));
+  }catch(e){
+    showResult({scores:[3,3,3,3],good:'相手に向き合おうとする姿勢が見られました。',advice:'評価の生成に失敗しました。通信環境を確認し、もう一度お試しください。',example:'',encourage:'その姿勢を大切に。'});
+  }
+  fbBtn.textContent='対応を終えてふりかえる';
+};
+
+function showResult(r){
+  const axes=AXES[cat];
+  const scores=r.scores.map(v=>Math.max(1,Math.min(5,Math.round(v))));
+  const avg=scores.reduce((a,b)=>a+b,0)/4;
+  const clear=avg>=3.5 && (state.trust>=55||state.calm>=55);
+  const res=document.getElementById('result'), ban=document.getElementById('banner');
+  res.style.display='block';
+  ban.className='banner '+(clear?'clear':'');
+  document.getElementById('result-icon').textContent=clear?'🌸':'🌱';
+  document.getElementById('result-title').textContent=clear?'ゴール達成！':'おつかれさまでした';
+  document.getElementById('result-sub').textContent=r.encourage||(clear?'相手の気持ちに寄り添えました。':'受け止め→具体化→見通しの順で再挑戦してみましょう。');
+
+  const sc=document.getElementById('scores'); sc.innerHTML='';
+  axes.forEach((a,i)=>{
+    const v=scores[i]; let stars='';
+    for(let n=1;n<=5;n++) stars+=`<span class="${n<=v?'on':'off'}">★</span>`;
+    const row=document.createElement('div'); row.className='score-row';
+    row.innerHTML=`<div class="label">${a}</div><div class="stars">${stars}</div><div class="bar" style="flex:1;width:auto"><i style="width:0%"></i></div>`;
+    sc.appendChild(row);
+    setTimeout(()=>{row.querySelector('i').style.width=(v*20)+'%';},100+i*150);
+  });
+
+  let html=`<p><b>よかった点：</b>${r.good||''}</p><p><b>さらに良くする工夫：</b>${r.advice||''}</p>`;
+  if(r.example) html+=`<p><b>声かけ例：</b>${r.example}</p>`;
+  html+=`<p><b>指針とのつながり：</b>${GUIDE[cat]}</p>`;
+  document.getElementById('review-body').innerHTML=html;
+  res.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
