@@ -342,7 +342,31 @@ const S = {
      persona:'あなたは5歳けんとの父親。家での関わり方に少し自信がなく、園での様子を知りたい。具体的なエピソードや家庭でできる関わりの提案に喜び、前向きになる。一般論だけだと物足りなさを感じる。'},
     {id:'p6',name:'みなとくんのお母さん',role:'保護者',title:'くり返し苦情を訴える保護者',desc:'強い口調の苦情に誠実に対応する場面',goal:'状況説明と今後の方針を伝え、理解を得る',
      av:{sex:'f',f:'firm',hairColor:'#111'},
-     persona:'あなたは4歳みなとの母親。これまで何度も苦情を訴えてきた。「またですか、園はちゃんと管理しているの」と強い口調で不信感が強いが、根底には「ちゃんと見てもらえているか」という不安がある。傾聴・具体的状況説明・今後の方針が丁寧に示されれば理解を示す。受け流す対応だと不信が深まる。'}
+     persona:'あなたは4歳みなとの母親。これまで何度も苦情を訴えてきた。「またですか、園はちゃんと管理しているの」と強い口調で不信感が強いが、根底には「ちゃんと見てもらえているか」という不安がある。傾聴・具体的状況説明・今後の方針が丁寧に示されれば理解を示す。受け流す対応だと不信が深まる。'},
+    {id:'p7',name:'りんちゃんのお母さん',role:'保護者',title:'持ち物の忘れが多い保護者',desc:'忘れ物・記名漏れが続く保護者への対応',goal:'責めずに、無理なく続けられる工夫を一緒に考える',
+     av:{sex:'f',f:'awkward',hairColor:'#4a3a2a'},
+     persona:'あなたは3歳りんの母親。持ち物の忘れや記名漏れが続いている。自覚はあり申し訳なく思っているが、仕事と育児で手一杯。一方的に注意されると責められた気持ちになり萎縮する。ねぎらいや、チェックリスト・前日準備など一緒に工夫を考える姿勢には安心し前向きになる。'},
+    {id:'p8',name:'そうまくんのお父さん',role:'保護者',title:'登園時の体調不良サイン',desc:'熱っぽい様子の子を預けようとする場面',goal:'家庭の事情に配慮しつつ、子どもの体調を最優先に伝える',
+     av:{sex:'m',f:'awkward',hairColor:'#2e2620'},
+     persona:'あなたは4歳そうまの父親。朝、子どもが少し熱っぽいが、どうしても外せない仕事があり預けたい。「元気だから大丈夫」と押し切ろうとする。頭ごなしに断られると困り顔。仕事への配慮を示しつつ、子どもの様子を具体的に伝えられ、預かりの基準や代替策を一緒に考えられると納得する。'},
+    {id:'p9',name:'ひまりちゃんのお母さん',role:'保護者',title:'行事・保育方針への要望',desc:'行事のやり方への不満・要望が出る場面',goal:'要望を受け止め、園の意図を伝え、対話の糸口を作る',
+     av:{sex:'f',f:'firm',hairColor:'#3a2d22'},
+     persona:'あなたは5歳ひまりの母親。発表会のやり方について「うちの子の出番が少ない、もっと配慮してほしい」と要望を伝えに来た。最初はやや不満げ。要望をきちんと受け止められ、行事のねらいや全体の配慮を丁寧に説明され、今後の意見の伝え方も示されると納得する。defensiveな対応だと不信が募る。'},
+    {id:'p10',name:'かなとくんのお母さん',role:'保護者',title:'発達を他児と比べる相談',desc:'他の子と比べてわが子を心配する相談',goal:'比較の不安を受け止め、その子自身の育ちに目を向ける',
+     av:{sex:'f',f:'sad',hairColor:'#5a4636'},
+     persona:'あなたは4歳かなとの母親。「同じクラスの子はもうできるのに、うちの子はまだ…」と他児と比べて落ち込み不安。安易な「比べないで」だと突き放された気持ちになる。その子自身の成長や良さを具体的に伝えられ、一緒に見守る姿勢を示されると安心する。'},
+    {id:'p11',name:'ゆづきちゃんのお母さん',role:'保護者',title:'家庭環境の変化への配慮',desc:'家庭の事情を打ち明けられる場面',goal:'プライバシーに配慮し、子どもを支える連携を約束する',
+     av:{sex:'f',f:'worried',hairColor:'#3a2d22'},
+     persona:'あなたは5歳ゆづきの母親。離婚を考えており、家庭が不安定で子どもにも影響が出ているかもと打ち明ける。話すのをためらいながら、最近の子どもの様子を心配している。立ち入りすぎず受け止め、園でできる見守りや配慮を具体的に約束されると安心する。詮索されたり軽く扱われると心を閉ざす。'},
+    {id:'p12',name:'いつきくんのお母さん',role:'保護者',title:'アレルギー対応の相談',desc:'食物アレルギーの対応について相談される場面',goal:'不安を受け止め、園の安全管理体制を具体的に伝える',
+     av:{sex:'f',f:'worried',hairColor:'#4a3526'},
+     persona:'あなたは3歳いつきの母親。卵アレルギーがあり、給食でのアレルギー対応が本当に大丈夫か強く心配している。万一を思うと不安で、具体的な確認をしたい。あいまいな説明だと不安が増す。除去食の手順・確認体制・誤食時の対応など具体的に説明され、家庭との情報共有を約束されると安心する。'},
+    {id:'p13',name:'みうちゃんのお父さん',role:'保護者',title:'写真・個人情報の取り扱いへの懸念',desc:'園の写真掲載や情報管理への不安が出る場面',goal:'懸念を受け止め、園の取り扱い方針を明確に伝える',
+     av:{sex:'m',f:'firm',hairColor:'#222'},
+     persona:'あなたは4歳みうの父親。園だよりやSNSへの写真掲載、個人情報の管理について「どう扱われているのか」と懸念を伝えに来た。あいまいだと不信が募る。掲載の同意確認の仕組み、情報管理の方針、配慮の仕方を具体的に説明され、希望が反映されると安心する。'},
+    {id:'p14',name:'あかりちゃんのお母さん',role:'保護者',title:'連絡帳で細かな要求が続く',desc:'連絡帳に細かな指示・要求が毎日続く場面',goal:'要求の背景の思いを受け止め、無理のない連携に整える',
+     av:{sex:'f',f:'firm',hairColor:'#3a2d22'},
+     persona:'あなたは3歳あかりの母親。連絡帳に毎日細かな指示や要求を書いてくる(水分の回数、午睡の時間、関わり方など)。背景には子どもへの強い愛情と心配がある。要求を否定されると不信になる。思いをまず受け止められ、園でできること・難しいことを誠実に線引きされ、信頼できる連携の形を一緒に作れると落ち着く。'}
   ],
   child:[
     {id:'c1',name:'4歳 りく',role:'子ども',title:'おもちゃの取り合い',desc:'取り合いで泣いている子への仲裁',goal:'落ち着いて気持ちを話し、次の行動へ向かう',
@@ -371,7 +395,31 @@ const S = {
      persona:'あなたは5歳だいき。積み木を崩され「だって崩されたんだもん！むかついた！」と友だちを叩いてしまった。これがくり返されている。頭ごなしに叱られると反発し心を閉ざす。気持ちを理解され、何が嫌だったか一緒に整理し別の方法を考えてもらえると少しずつ受け止める。'},
     {id:'c9',name:'5歳 ゆうき',role:'子ども',title:'個別配慮が必要な子',desc:'切り替えが苦手で固まる子への関わり',goal:'安心して見通しを持ち、自分のペースで動く',
      av:{sex:'m',role:'child',f:'awkward',hairColor:'#222'},
-     persona:'あなたは5歳ゆうき。活動の切り替えが苦手で、急な変更があると「……やだ。わからない」と固まったり混乱したりする。急かされると余計に混乱する。事前の予告・見通し・安心できる声かけがあると落ち着いて行動できる。'}
+     persona:'あなたは5歳ゆうき。活動の切り替えが苦手で、急な変更があると「……やだ。わからない」と固まったり混乱したりする。急かされると余計に混乱する。事前の予告・見通し・安心できる声かけがあると落ち着いて行動できる。'},
+    {id:'c10',name:'4歳 みなみ',role:'子ども',title:'友だちの輪に入れない子',desc:'遊びに入りたいのに入れずにいる子への援助',goal:'安心して、自分から関わるきっかけをつかむ',
+     av:{sex:'f',role:'child',f:'down',hairColor:'#4a3526'},
+     persona:'あなたは4歳みなみ。みんなが楽しそうに遊んでいるのに入れず、はしっこで見ている。「入れて」が言えない。無理に促されると尻込みする。気持ちを受け止められ、一緒に行く・声のかけ方を教えてもらうなど安心できる橋渡しがあると、勇気を出せる。'},
+    {id:'c11',name:'5歳 はやと',role:'子ども',title:'嘘やごまかしをした時',desc:'やっていないと言い張る子への関わり',goal:'責めずに本当の気持ちを話せるようにする',
+     av:{sex:'m',role:'child',f:'awkward',hairColor:'#2e2620'},
+     persona:'あなたは5歳はやと。コップを倒したのに「ぼくじゃない」と言い張っている。叱られるのが怖くてごまかしている。問い詰められると意固地になる。責められず、正直に言っても大丈夫だと安心させてもらえると、本当のことを話せる。'},
+    {id:'c12',name:'3歳 ゆめ',role:'子ども',title:'トイレの失敗を恥ずかしがる子',desc:'おもらしをして固まっている子への対応',goal:'恥ずかしさを受け止め、安心させる',
+     av:{sex:'f',role:'child',f:'cry',hairColor:'#3a2d22'},
+     persona:'あなたは3歳ゆめ。おもらしをしてしまい、恥ずかしくて泣きそうになって固まっている。大きな声で指摘されると一層いたたまれなくなる。さりげなく受け止められ、大丈夫だよと安心させてもらえると落ち着き、着替えに応じられる。'},
+    {id:'c13',name:'4歳 りお',role:'子ども',title:'特定の保育士にしか心を開かない子',desc:'担当以外には固くなる子への関わり',goal:'無理なく少しずつ信頼関係を築く',
+     av:{sex:'f',role:'child',f:'firm',hairColor:'#4a3526'},
+     persona:'あなたは4歳りお。いつもの先生が大好きで、他の先生には「○○先生がいい」と固くなり、なかなか応じない。無理に距離を詰められると警戒する。気持ちを認められ、急かさず、好きなことを糸口に少しずつ関わってもらえると心を開いていく。'},
+    {id:'c14',name:'5歳 こうき',role:'子ども',title:'一人だけ違うことをしたがる子',desc:'集団活動で別行動を望む子への関わり',goal:'気持ちを尊重しつつ、集団との折り合いを支える',
+     av:{sex:'m',role:'child',f:'firm',hairColor:'#222'},
+     persona:'あなたは5歳こうき。みんなが製作をする時間に「ぼくはブロックがしたい」と別のことをしたがる。やりたい気持ちが強く、頭ごなしに止められると反発する。気持ちを認められ、なぜ今これをするかの説明や、折り合いの提案(先にこれをやってから等)があると受け入れられる。'},
+    {id:'c15',name:'4歳 ゆうな',role:'子ども',title:'けがをさせてしまった側の子',desc:'友だちにけがをさせ動揺している子への関わり',goal:'気持ちを受け止め、相手への思いに気づけるよう支える',
+     av:{sex:'f',role:'child',f:'down',hairColor:'#3a2d22'},
+     persona:'あなたは4歳ゆうな。押したら友だちが転んで泣いてしまい、自分も動揺して固まっている。強く叱責されると怖くて心を閉ざす。まず自分の気持ちを受け止められ、何があったか一緒に整理され、相手の痛みや次にどうするかに穏やかに気づかせてもらえると、自分から謝る気持ちになれる。'},
+    {id:'c16',name:'5歳 れん',role:'子ども',title:'乱暴な言葉を使う子',desc:'「うざい」など強い言葉を使う子への関わり',goal:'背景の気持ちを受け止め、別の言い方に気づく',
+     av:{sex:'m',role:'child',f:'mad',hairColor:'#2a2018'},
+     persona:'あなたは5歳れん。「うざい」「あっちいけ」など強い言葉を使う。本当はかまってほしい・うまく言えない気持ちがある。言葉だけを叱られると反発する。背景の気持ちを受け止められ、本当はどうしたかったかを一緒に考え、別の言い方を示されると少しずつ受け入れる。'},
+    {id:'c17',name:'3歳 さな',role:'子ども',title:'過度に甘えてくる子',desc:'抱っこや常時そばを求め続ける子への関わり',goal:'安心感を満たしつつ、自分でできる力も支える',
+     av:{sex:'f',role:'child',f:'cry',hairColor:'#4a3526'},
+     persona:'あなたは3歳さな。「だっこ」「せんせいといっしょ」とずっと甘え、離れると不安がる。突き放されると激しく泣く。気持ちを受け止め安心感を満たしてもらいつつ、「ここまでできたね」と小さな自立を認められると、少しずつ自分で動ける。'}
   ],
   leader:[
     {id:'l1',name:'若手保育士',role:'職員',title:'若手保育士への指導',desc:'保護者対応で落ち込む職員への声かけ',goal:'責めずに振り返り、次の実践につなげる',
@@ -451,8 +499,9 @@ function updateStatus(){
 // ============================================================
 //  Claude API（ローカル：自分のキーをブラウザから直接利用）
 // ============================================================
-async function callClaude(system, messages, maxTokens){
+async function callClaude(system, messages, maxTokens, temperature){
   if(!API_KEY) throw new Error('NO_KEY');
+  const temp = (typeof temperature==='number') ? temperature : 1;
   const res=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{
@@ -461,7 +510,7 @@ async function callClaude(system, messages, maxTokens){
       "anthropic-version": "2023-06-01",
       "anthropic-dangerous-direct-browser-access": "true"
     },
-    body:JSON.stringify({model:"claude-sonnet-4-6", max_tokens:maxTokens||1000, system, messages})
+    body:JSON.stringify({model:"claude-sonnet-4-6", max_tokens:maxTokens||1000, temperature:temp, system, messages})
   });
   if(!res.ok){
     let detail='';
@@ -506,7 +555,28 @@ calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜
 
   let apiMessages;
   if(isOpening){
-    apiMessages=[{role:'user',content:'（保育士・主任があなたの前にいます。この場面で、あなたから最初のひとことを話しかけてください。）'}];
+    // 毎回ちがう入り方になるよう、切り出しの方向性をランダムに与える
+    const openings = (cat==='child') ? [
+      'まだ言葉にできず、態度や短い一言でぐずる感じから始めてください。',
+      'すねて黙り込んでいるところに、ぽつりと一言こぼす感じで始めてください。',
+      '保育士に甘えたり、別のことに気をそらしながら切り出してください。',
+      '今の気持ちを子どもなりのストレートな一言で表してください。',
+      'これまでの状況を子どもの視点でうったえる感じで始めてください。',
+      '泣きべそや怒りなど、感情が先に出る入り方で始めてください。'
+    ] : (cat==='leader') ? [
+      'やや遠慮がちに、相談を切り出す感じで始めてください。',
+      'もやもやした気持ちを率直に打ち明ける入り方で始めてください。',
+      '具体的な出来事を一つ挙げて、そこから相談する形で始めてください。',
+      '自信のなさや不安をにじませながら切り出してください。'
+    ] : [
+      'まず気がかりな点を率直に切り出す入り方で始めてください。',
+      '少し言いにくそうに、遠回しに切り出す感じで始めてください。',
+      '感情（不安・怒り・戸惑いなど）が先に出る入り方で始めてください。',
+      '具体的な出来事や様子に触れながら切り出してください。',
+      'あいさつや前置きから入り、本題に移る形で始めてください。'
+    ];
+    const pick = openings[Math.floor(Math.random()*openings.length)];
+    apiMessages=[{role:'user',content:`（保育士・主任があなたの前にいます。この場面で、あなたから最初のひとことを話しかけてください。毎回ちがう自然な切り出しにすること。今回は次の方向で：${pick} ただし設定から外れない範囲で、表現や語り口は自由に変えてください。）`}];
   } else {
     apiMessages=history.map(h=>({role:h.role==='them'?'assistant':'user', content:h.content}));
   }
@@ -668,40 +738,72 @@ function loadVoices(){
 if(synth){
   loadVoices();
   synth.onvoiceschanged=loadVoices;
-  // 一部ブラウザは初回getVoicesが空。少し遅らせて再取得
   setTimeout(loadVoices,300);
   setTimeout(loadVoices,1200);
+}
+
+// 自然さの高い音声ほど優先するスコア付け
+function voiceScore(v){
+  const n=(v.name||'')+' '+(v.voiceURI||'');
+  let s=0;
+  if(/natural/i.test(n)) s+=100;        // Microsoft ... Natural（最も自然）
+  if(/google/i.test(n)) s+=80;          // Google 日本語（自然）
+  if(/online|cloud|neural/i.test(n)) s+=60;
+  if(/nanami|keita|aoi|mayu|naoki|shiori|masaru/i.test(n)) s+=40; // Microsoftの新世代名
+  if(!v.localService) s+=30;            // オンライン音声は概して高品質
+  if(/haruka|ichiro|sayaka|kyoko|otoya|o-ren/i.test(n)) s+=5;     // 旧来の声は低め
+  return s;
+}
+// 性別の推定（名前ベース）
+function isFemaleVoice(v){
+  return /female|woman|nanami|aoi|mayu|shiori|sayaka|kyoko|haruka|o-ren|ayumi/i.test((v.name||''));
+}
+function isMaleVoice(v){
+  return /male|man|keita|naoki|masaru|ichiro|otoya|daichi/i.test((v.name||''));
+}
+
+// 役柄ごとに最適な声を選ぶ
+function pickVoice(role){
+  if(!jaVoices.length) return null;
+  const sorted=[...jaVoices].sort((a,b)=>voiceScore(b)-voiceScore(a));
+  if(role==='father'){
+    return sorted.find(isMaleVoice) || sorted[0];
+  }
+  // 子ども・母親・職員は女性的な声を優先（無ければ最良の声）
+  return sorted.find(isFemaleVoice) || sorted[0];
 }
 
 const speakerBtn=document.getElementById('speaker');
 if(!synth){ speakerBtn.style.display='none'; }
 speakerBtn.onclick=()=>{
-  audioUnlocked=true;            // ボタン操作で音声を解禁
+  audioUnlocked=true;
   speakOn=!speakOn;
   speakerBtn.classList.toggle('off',!speakOn);
   speakerBtn.textContent= speakOn ? '🔊 読み上げ ON' : '🔇 読み上げ OFF';
   if(!speakOn && synth) synth.cancel();
 };
 
-// 役柄に応じて声色（高さ・速さ）を変える
-// manual=true のときはユーザーが🔊を押した手動再生（speakOnやunlock状態に関係なく鳴らす）
+// 役柄に応じて声・高さ・速さを変える
 function speak(text, manual){
   if(!synth || !text) return;
-  if(!manual && (!speakOn || !audioUnlocked)) return;  // 自動再生は解禁後かつON時のみ
+  if(!manual && (!speakOn || !audioUnlocked)) return;
   if(manual) audioUnlocked=true;
   if(!jaVoices.length) loadVoices();
   try{
     synth.cancel();
     const u=new SpeechSynthesisUtterance(text);
     u.lang='ja-JP';
-    if(jaVoices.length){
-      u.voice = cat==='child'
-        ? (jaVoices.find(v=>/female|woman|Kyoko|O-ren|Otoya|Sayaka/i.test(v.name)) || jaVoices[0])
-        : jaVoices[0];
-    }
-    if(cat==='child'){ u.pitch=1.6; u.rate=1.05; }
+    // 現在の相手が父親かどうか（personaやavで男性指定の保護者）
+    const isFather = (cat==='parent' && cur && cur.av && cur.av.sex==='m');
+    const role = (cat==='child') ? 'child' : (isFather ? 'father' : 'female');
+    const v=pickVoice(role);
+    if(v) u.voice=v;
+    // 自然音声は機械音声ほどピッチを上げると不自然になるため、控えめに調整
+    const natural = v && voiceScore(v)>=60;
+    if(cat==='child'){ u.pitch= natural?1.25:1.5; u.rate=1.04; }
     else if(cat==='leader'){ u.pitch=1.0; u.rate=1.0; }
-    else { u.pitch=1.08; u.rate=0.98; }
+    else if(isFather){ u.pitch= natural?0.95:0.9; u.rate=0.97; }
+    else { u.pitch= natural?1.05:1.1; u.rate=0.98; }
     u.onerror=()=>{ if(manual) add('sys','このブラウザでは音声読み上げを再生できませんでした（Chrome/Edge/Safariの最新版をお試しください）。'); };
     synth.speak(u);
   }catch(e){
@@ -735,7 +837,7 @@ ${transcript}
 
 上記の保育士・主任役の対応を評価してください。`;
   try{
-    const raw=await callClaude(system,[{role:'user',content:userMsg}],1200);
+    const raw=await callClaude(system,[{role:'user',content:userMsg}],1200,0.3);
     const clean=raw.replace(/```json|```/g,'').trim();
     showResult(JSON.parse(clean));
   }catch(e){
