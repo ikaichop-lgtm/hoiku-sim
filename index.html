@@ -412,6 +412,7 @@ document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.query
 
 function start(s){
   cur=s; turns=0; history=[]; state={trust:levelBase(), calm:levelBase()};
+  audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
   document.getElementById('select-view').style.display='none';
   document.getElementById('chat-view').style.display='block';
   document.getElementById('ch-av').innerHTML=avatarSVG(s.av);
@@ -523,11 +524,10 @@ calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜
     const bubble=add('them',text);
     history.push({role:'them',content:text});
     updateStatus();
-    if(isOpening && window.speechSynthesis && !audioUnlocked){
-      // 開幕の自動再生はブラウザ制限で鳴らないため、押せば聞ける案内を一度だけ出す
-      add('sys','💡 各セリフの右の🔊を押すと、相手の声で読み上げます（ヘッダーの「読み上げ」をONにすると以降は自動再生）。');
-    } else if(typeof speak==='function'){
-      speak(text);
+    if(typeof speak==='function') speak(text);
+    if(isOpening && window.speechSynthesis && !openingHintShown){
+      openingHintShown=true;
+      add('sys','💡 相手の声は自動で読み上げます。各セリフ右の🔊で再生し直せます。ヘッダーの「読み上げ」で停止できます。');
     }
   }catch(e){
     typing.remove();
@@ -656,6 +656,7 @@ micBtn.onclick=async()=>{
 // ============================================================
 let speakOn=true;
 let audioUnlocked=false;   // ユーザー操作後にtrue（自動再生はそれ以降のみ）
+let openingHintShown=false;
 let jaVoices=[];
 const synth=window.speechSynthesis;
 
