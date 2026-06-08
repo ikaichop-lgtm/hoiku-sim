@@ -91,6 +91,12 @@ header p{margin:0;color:var(--soft);font-size:14px}
   <div class="src">Chromeで開き、ご自身のAnthropic APIキーを使って動かします</div>
 </header>
 
+<div id="visitor-counter" style="text-align:center;margin:-6px 0 18px">
+  <span style="font-size:13px;color:var(--soft)">🌼 あなたは </span>
+  <span id="counter-digits" style="display:inline-block;background:#2a2018;color:#7CFC9A;font-family:'Courier New',monospace;font-weight:bold;font-size:20px;letter-spacing:4px;padding:4px 12px;border-radius:6px;border:2px solid #b9a98a;box-shadow:inset 0 0 8px rgba(0,0,0,.6);vertical-align:middle">- - - -</span>
+  <span style="font-size:13px;color:var(--soft)"> 人目の保育士です 🌼</span>
+</div>
+
 <div id="key-panel" class="panel" style="padding:16px;margin-bottom:16px">
   <b>🔑 APIキーの設定</b>
   <p style="font-size:13px;color:var(--soft);margin:6px 0">
@@ -455,6 +461,45 @@ function renderCards(){
 }
 renderCards();
 initKeyPanel();
+
+// ============================================================
+//  訪問者カウンター（無料サービスを利用。1つ目が失敗したら2つ目へ）
+// ============================================================
+(function initVisitorCounter(){
+  const el=document.getElementById('counter-digits');
+  if(!el) return;
+  // このシミュレーター専用のユニークなキー（他と衝突しないよう固有の文字列に）
+  const KEY='hoiku_kakehashi_sim_visits_2026';
+  function show(n){
+    // 7セグ風に右詰めゼロ埋め（最低4桁）
+    const s=String(n);
+    el.textContent=(s.length<4 ? s.padStart(4,'0') : s).split('').join(' ');
+  }
+  // 二重カウント防止：同一セッションでは1回だけ+1
+  const hitOnce = !sessionStorage.getItem('hoiku_counted');
+  const endpoints=[
+    'https://countapi.mileshilliard.com/api/v1/'+(hitOnce?'hit':'get')+'/'+KEY,
+    'https://api.countapi.xyz/'+(hitOnce?'hit':'get')+'/hoiku-kakehashi/'+KEY
+  ];
+  (async()=>{
+    for(const url of endpoints){
+      try{
+        const r=await fetch(url,{cache:'no-store'});
+        if(!r.ok) continue;
+        const j=await r.json();
+        const val=(typeof j.value==='number')?j.value:(typeof j.count==='number'?j.count:null);
+        if(val!=null){
+          show(val);
+          try{ sessionStorage.setItem('hoiku_counted','1'); }catch(e){}
+          return;
+        }
+      }catch(e){ /* 次のサービスへ */ }
+    }
+    // すべて失敗したらカウンター部分をそっと隠す（本体に影響させない）
+    const wrap=document.getElementById('visitor-counter');
+    if(wrap) wrap.style.display='none';
+  })();
+})();
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;renderCards();});
 document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
 
