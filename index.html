@@ -1215,6 +1215,43 @@ header>.ai-logo .logo-sub{
 }
 .hint-back-btn:hover{background:#fff6f4;}
 
+
+
+/* ===== 2026-06-13 最終修正：長文全文表示・ヒントボタン・最下部戻る ===== */
+.vn-dialog{
+  height:auto!important;
+  min-height:258px!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+.vn-text,
+.vn-text.long-line,
+.vn-text.very-long-line{
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+#hint{
+  background:#fffdf4!important;
+  color:#8a6b13!important;
+  border:2px solid #e8c65a!important;
+  box-shadow:0 5px 12px rgba(176,139,44,.12)!important;
+}
+#hint:hover{background:#fff8d8!important;}
+.hint-box{order:initial!important;}
+.hint-back-wrap{
+  margin:6px 12px calc(18px + env(safe-area-inset-bottom))!important;
+}
+@media(max-width:650px){
+  .vn-dialog{
+    min-height:270px!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+}
 </style>
 </head>
 <body class="step-start">
@@ -1299,8 +1336,6 @@ header>.ai-logo .logo-sub{
   <div class="mini-status-wrap">
     <div class="mini-status" id="status-bottom"></div>
   </div>
-  <div class="hint-box" id="hint-box" role="status" aria-live="polite"></div>
-  <div class="hint-back-wrap"><button class="hint-back-btn" id="back-bottom">← 前の画面にもどる</button></div>
 
   <!-- 入力エリア -->
   <div class="composer">
@@ -1310,8 +1345,11 @@ header>.ai-logo .logo-sub{
   </div>
   <div class="actions">
     <button class="btn secondary" id="feedback" disabled>途中でふりかえる</button>
-    <button class="btn ghost" id="hint">ヒント</button>
+    <button class="btn ghost" id="hint">💡ヒント</button>
   </div>
+
+  <div class="hint-box" id="hint-box" role="status" aria-live="polite"></div>
+  <div class="hint-back-wrap"><button class="hint-back-btn" id="back-bottom">← 前の画面にもどる</button></div>
 
   <div class="result" id="result">
     <div class="banner" id="banner">
