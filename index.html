@@ -1255,14 +1255,14 @@ header>.ai-logo .logo-sub{
 
 /* ===== 声かけ入力をポップアップ化 ===== */
 .composer-launch-wrap{padding:12px;background:rgba(255,253,248,.96);}
-.composer-launch{width:100%;border:2px solid #efb4ac;background:#fffdf9;color:#7b5b51;border-radius:20px;padding:15px 18px;font:800 17px/1.35 inherit;cursor:pointer;box-shadow:0 8px 18px rgba(168,112,92,.10);}
+.composer-launch{width:100%;border:2px solid #efb4ac;background:#fffdf9;color:#7b5b51;border-radius:20px;padding:15px 18px;font:900 21px/1.35 inherit;cursor:pointer;box-shadow:0 8px 18px rgba(168,112,92,.10);}
 .composer-launch:hover{background:#fff7f3;}
 .composer-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:flex-end;justify-content:center;}
 .composer-modal.open{display:flex;}
 .composer-modal-backdrop{position:absolute;inset:0;background:rgba(54,39,32,.42);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
 .composer-modal-panel{position:relative;width:min(100%,520px);background:#fffdf9;border-radius:24px 24px 0 0;box-shadow:0 -16px 40px rgba(70,40,20,.24);padding:14px 12px calc(14px + env(safe-area-inset-bottom));animation:composerUp .22s ease-out;}
 @keyframes composerUp{from{transform:translateY(100%);opacity:.4}to{transform:translateY(0);opacity:1}}
-.composer-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 4px 10px 8px;font-size:17px;font-weight:900;color:#5f4b43;}
+.composer-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 4px 10px 8px;font-size:21px;font-weight:900;color:#5f4b43;}
 .composer-close{width:40px;height:40px;border:0;border-radius:50%;background:#fff0eb;color:#bd746f;font-size:27px;line-height:1;cursor:pointer;}
 .composer-modal .composer{display:grid!important;grid-template-columns:1fr 58px!important;gap:9px!important;padding:0!important;background:transparent!important;}
 .composer-modal .composer textarea{grid-column:1/-1!important;display:block!important;width:100%!important;height:150px!important;min-height:150px!important;max-height:42vh!important;overflow-y:auto!important;white-space:pre-wrap!important;font-size:17px!important;line-height:1.65!important;padding:14px!important;border-radius:18px!important;}
@@ -1444,18 +1444,18 @@ body.composer-open{overflow:hidden;}
 
   <!-- 入力エリア：ポップアップ起動 -->
   <div class="composer-launch-wrap">
-    <button class="composer-launch" id="open-composer" type="button">💬 保育士として声をかける</button>
+    <button class="composer-launch" id="open-composer" type="button">💬 保育士として対応する</button>
   </div>
 
   <div class="composer-modal" id="composer-modal" aria-hidden="true">
     <div class="composer-modal-backdrop" id="composer-backdrop"></div>
     <div class="composer-modal-panel" role="dialog" aria-modal="true" aria-labelledby="composer-modal-title">
       <div class="composer-modal-head">
-        <div id="composer-modal-title">保育士として声をかけてください</div>
+        <div id="composer-modal-title">保育士として対応する</div>
         <button class="composer-close" id="close-composer" type="button" aria-label="閉じる">×</button>
       </div>
       <div class="composer">
-        <textarea id="input" rows="4" placeholder="保育士として声をかけてください"></textarea>
+        <textarea id="input" rows="4" placeholder="保育士として対応する"></textarea>
         <button class="btn mic" id="mic" title="音声入力">🎤</button>
         <button class="btn" id="send">送信</button>
       </div>
@@ -2076,9 +2076,10 @@ function start(s){
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
   showAppStep('chat');
   document.getElementById('ch-av').innerHTML='';
-  inputEl.placeholder = (s.role==='保育士') ? '主任保育士として声をかけてください' : '保育士として声をかけてください';
-  const modalTitle=document.getElementById('composer-modal-title'); if(modalTitle) modalTitle.textContent=inputEl.placeholder;
-  const openBtn=document.getElementById('open-composer'); if(openBtn) openBtn.textContent='💬 '+inputEl.placeholder.replace('ください','る');
+  inputEl.placeholder = (s.role==='保育士') ? '主任保育士としての対応を入力してください' : '保育士としての対応を入力してください';
+  const responderLabel = (s.role==='保育士') ? '主任保育士として対応する' : '保育士として対応する';
+  const modalTitle=document.getElementById('composer-modal-title'); if(modalTitle) modalTitle.textContent=responderLabel;
+  const openBtn=document.getElementById('open-composer'); if(openBtn) openBtn.textContent='💬 '+responderLabel;
   updateFigure();
   setSceneTitleSize('場面：'+s.title);
   document.getElementById('ch-name').textContent=displayNameForScene(s);
@@ -2086,7 +2087,7 @@ function start(s){
   document.getElementById('result').style.display='none';
   fbBtn.disabled=false; fbBtn.textContent='途中でふりかえる';
   msgs.innerHTML='';
-  add('sys','「'+s.title+'」の場面です（難易度：'+levelLabel()+'）。あなたは'+(s.role==='保育士'?'主任保育士':'保育士')+'として声をかけてみましょう。');
+  add('sys','「'+s.title+'」の場面です（難易度：'+levelLabel()+'）。あなたは'+(s.role==='保育士'?'主任保育士':'保育士')+'として対応してみましょう。');
   updateStatus();
   window.scrollTo(0,0);
   aiTurn(true);
