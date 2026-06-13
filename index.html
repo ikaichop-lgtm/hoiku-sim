@@ -1358,6 +1358,22 @@ body.composer-open{overflow:hidden;}
   .vn-dialog .mini-status .meter{padding:7px 10px!important;grid-template-columns:44px minmax(0,1fr) 32px!important;}
 }
 
+
+/* ===== パラメータ増減アニメーション ===== */
+.vn-dialog .mini-status .meter{position:relative!important;overflow:visible!important;transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease!important;}
+.vn-dialog .mini-status .bar i{transition:width .75s cubic-bezier(.22,.8,.26,1),filter .3s ease!important;}
+.vn-dialog .mini-status .meter-value{transition:transform .25s ease,font-size .25s ease!important;}
+.vn-dialog .mini-status .meter.param-up{animation:paramRise .72s ease both;border-color:#86bf83!important;box-shadow:0 0 0 3px rgba(134,191,131,.18)!important;}
+.vn-dialog .mini-status .meter.param-down{animation:paramDrop .72s ease both;border-color:#e69a91!important;box-shadow:0 0 0 3px rgba(230,154,145,.18)!important;}
+.vn-dialog .mini-status .meter.param-up .meter-value,.vn-dialog .mini-status .meter.param-down .meter-value{transform:scale(1.22);font-size:14px!important;}
+.param-delta{position:absolute;right:8px;top:-18px;z-index:5;min-width:38px;padding:2px 7px;border-radius:999px;font-size:12px;font-weight:900;text-align:center;opacity:0;pointer-events:none;animation:deltaFloat 1.25s ease-out forwards;}
+.param-delta.up{background:#e8f6e5;color:#4f8d4e;border:1px solid #9fce9c;}
+.param-delta.down{background:#fff0ed;color:#b75f58;border:1px solid #e9aaa3;}
+@keyframes paramRise{0%{transform:translateY(0)}35%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+@keyframes paramDrop{0%{transform:translateY(0)}35%{transform:translateY(4px)}100%{transform:translateY(0)}}
+@keyframes deltaFloat{0%{opacity:0;transform:translateY(6px) scale(.85)}18%{opacity:1;transform:translateY(0) scale(1)}72%{opacity:1;transform:translateY(-7px) scale(1)}100%{opacity:0;transform:translateY(-14px) scale(.94)}}
+@media (prefers-reduced-motion:reduce){.vn-dialog .mini-status .bar i,.vn-dialog .mini-status .meter,.param-delta{transition:none!important;animation:none!important}.param-delta{display:none!important}}
+
 </style>
 </head>
 <body class="step-start">
@@ -2139,15 +2155,53 @@ function setSceneTitleSize(title){
   status.style.setProperty('--scene-title-size', size);
   status.dataset.sceneTitle=title||'';
 }
+let previousStatusValues=null;
 function updateStatus(){
   state.calm=Math.max(0,Math.min(100,state.calm));
   state.trust=Math.max(0,Math.min(100,state.trust));
   state.satisfaction=Math.max(0,Math.min(100,state.satisfaction));
-  const meterHTML=`<div class="meter"><span class="meter-label">安心</span><span class="bar"><i style="width:${state.calm}%"></i></span><span class="meter-value">${state.calm}</span></div><div class="meter"><span class="meter-label">納得</span><span class="bar"><i style="width:${state.satisfaction}%"></i></span><span class="meter-value">${state.satisfaction}</span></div><div class="meter"><span class="meter-label">信頼</span><span class="bar"><i style="width:${state.trust}%"></i></span><span class="meter-value">${state.trust}</span></div>`;
+
+  const current=[
+    {key:'calm',label:'安心',value:state.calm},
+    {key:'satisfaction',label:'納得',value:state.satisfaction},
+    {key:'trust',label:'信頼',value:state.trust}
+  ];
+  const old=previousStatusValues||Object.fromEntries(current.map(x=>[x.key,x.value]));
+  const meterHTML=current.map(x=>{
+    const before=Number(old[x.key]??x.value);
+    const delta=x.value-before;
+    const cls=delta>0?' param-up':delta<0?' param-down':'';
+    const deltaHTML=delta===0?'':`<span class="param-delta ${delta>0?'up':'down'}">${delta>0?'+':''}${delta}</span>`;
+    return `<div class="meter${cls}" data-key="${x.key}" data-from="${before}" data-to="${x.value}">${deltaHTML}<span class="meter-label">${x.label}</span><span class="bar"><i style="width:${before}%"></i></span><span class="meter-value">${before}</span></div>`;
+  }).join('');
+
   const status=document.getElementById('status');
   const bottom=document.getElementById('status-bottom');
   if(status) status.innerHTML='';
-  if(bottom) bottom.innerHTML=meterHTML;
+  if(bottom){
+    bottom.innerHTML=meterHTML;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      bottom.querySelectorAll('.meter').forEach(meter=>{
+        const from=Number(meter.dataset.from);
+        const to=Number(meter.dataset.to);
+        const bar=meter.querySelector('.bar i');
+        const value=meter.querySelector('.meter-value');
+        if(bar) bar.style.width=to+'%';
+        if(value && from!==to){
+          const start=performance.now();
+          const duration=700;
+          const step=now=>{
+            const t=Math.min(1,(now-start)/duration);
+            const eased=1-Math.pow(1-t,3);
+            value.textContent=Math.round(from+(to-from)*eased);
+            if(t<1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        } else if(value){ value.textContent=to; }
+      });
+    }));
+  }
+  previousStatusValues={calm:state.calm,satisfaction:state.satisfaction,trust:state.trust};
   updateFigure();
   checkClearCondition();
 }
