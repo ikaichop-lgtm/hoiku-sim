@@ -1374,6 +1374,24 @@ body.composer-open{overflow:hidden;}
 @keyframes deltaFloat{0%{opacity:0;transform:translateY(6px) scale(.85)}18%{opacity:1;transform:translateY(0) scale(1)}72%{opacity:1;transform:translateY(-7px) scale(1)}100%{opacity:0;transform:translateY(-14px) scale(.94)}}
 @media (prefers-reduced-motion:reduce){.vn-dialog .mini-status .bar i,.vn-dialog .mini-status .meter,.param-delta{transition:none!important;animation:none!important}.param-delta{display:none!important}}
 
+
+
+/* ===== カテゴリーボタンを2列×2段に固定 ===== */
+.tabs{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  width:100%!important;
+  max-width:430px!important;
+  margin:2px auto 8px!important;
+}
+.tab{
+  width:100%!important;
+  min-width:0!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+
 </style>
 </head>
 <body class="step-start">
@@ -1412,8 +1430,8 @@ body.composer-open{overflow:hidden;}
   <section class="select-step">
     <div class="select-title">対応する相手・場面を選んでください</div>
     <div class="tabs">
-      <button class="tab active" data-cat="parent_pickup">保護者（お迎え時）</button>
-      <button class="tab" data-cat="parent_interview">保護者（個人面談）</button>
+      <button class="tab active" data-cat="parent_pickup">保護者</button>
+      <button class="tab" data-cat="parent_interview">個人面談</button>
       <button class="tab" data-cat="child">子ども</button>
       <button class="tab" data-cat="leader">職員</button>
     </div>
@@ -2140,8 +2158,13 @@ function start(s){
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
   showAppStep('chat');
   document.getElementById('ch-av').innerHTML='';
-  inputEl.placeholder = (s.role==='保育士') ? '主任保育士としての対応を入力してください' : '保育士としての対応を入力してください';
-  const responderLabel = (s.role==='保育士') ? '主任保育士として対応する' : '保育士として対応する';
+  const isInterview = cat==='parent_interview';
+  inputEl.placeholder = isInterview
+    ? '保護者に話しかけてください'
+    : ((s.role==='保育士') ? '主任保育士としての対応を入力してください' : '保育士としての対応を入力してください');
+  const responderLabel = isInterview
+    ? '保護者と対話をする'
+    : ((s.role==='保育士') ? '主任保育士として対応する' : '保育士として対応する');
   const modalTitle=document.getElementById('composer-modal-title'); if(modalTitle) modalTitle.textContent=responderLabel;
   const openBtn=document.getElementById('open-composer'); if(openBtn) openBtn.textContent=responderLabel;
   updateFigure();
