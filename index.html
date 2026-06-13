@@ -476,13 +476,76 @@ body.step-chat .wrap{overflow:visible;}
   .vn-back{min-width:104px!important;padding:0 11px!important;font-size:13px!important;}
 }
 
+
+/* ===== レイアウト再調整：ロゴ・3ゲージ・戻るボタン ===== */
+.select-logo{margin:2px 0 16px;}
+.select-logo .ai-logo{margin-bottom:0;}
+.vn-goal{display:none!important;}
+.vn-topbar{
+  display:grid!important;
+  grid-template-columns:1fr 44px!important;
+  grid-template-areas:
+    "meters speaker"
+    "back back"!important;
+  gap:10px!important;
+  min-height:auto!important;
+  padding:14px 12px 12px!important;
+  align-items:center!important;
+}
+.vn-meters{
+  grid-area:meters!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:none!important;
+}
+.vn-meters::before{
+  content:"場面：" attr(data-scene-title)!important;
+  grid-column:1!important;
+  font-size:20px!important;
+  line-height:1.4!important;
+  margin-bottom:3px!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  text-align:left!important;
+}
+.meter{
+  display:grid!important;
+  grid-template-columns:44px 1fr 34px!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-height:40px!important;
+  padding:7px 9px!important;
+}
+.meter .bar{width:100%!important;height:10px!important;}
+.meter-label,.meter-value{display:block!important;font-size:14px!important;font-weight:800!important;}
+.meter-value{text-align:right!important;color:#fff!important;}
+.turn-count{display:none!important;}
+.speaker{grid-area:speaker!important;align-self:start!important;justify-self:end!important;}
+.vn-back{
+  grid-area:back!important;
+  justify-self:start!important;
+  margin-top:2px!important;
+  min-width:156px!important;
+  height:42px!important;
+  line-height:42px!important;
+  font-size:14px!important;
+}
+.vn-stage{margin-top:0!important;}
+@media(max-width:650px){
+  .vn-topbar{grid-template-columns:1fr 42px!important;padding-top:16px!important;}
+  .vn-meters::before{font-size:19px!important;}
+}
+
 </style>
 </head>
 <body class="step-start">
 <div class="wrap">
 <header>
   <div class="ai-logo" aria-label="保育のかけはし"><span class="logo-main">保育のかけはし</span><span class="logo-sub">保育士のための対話型シミュレーター</span></div>
-  <p style="font-size:14.5px;color:var(--ink);margin:0 0 2px;font-weight:700">保育所保育指針にもとづき、子ども主体の保育につなげる</p>
+  <p style="font-size:14.5px;color:var(--ink);margin:0 0 2px;font-weight:700">保育所保育指針にもとづき<br>子ども主体の保育につなげる</p>
   <div class="src">Chromeで開き、ご自身のAnthropic APIキーを使って動かします</div>
 </header>
 
@@ -507,6 +570,10 @@ body.step-chat .wrap{overflow:visible;}
 </div>
 
 <div id="select-view" style="display:none">
+  <div class="select-logo">
+    <div class="ai-logo" aria-label="保育のかけはし"><span class="logo-main">保育のかけはし</span><span class="logo-sub">保育士のための対話型シミュレーター</span></div>
+  </div>
+
   <section class="select-step">
     <div class="select-title">困っているのは誰ですか？<small>まず、練習したい相手を選びます</small></div>
     <div class="tabs">
@@ -532,14 +599,13 @@ body.step-chat .wrap{overflow:visible;}
 <div id="chat-view" class="chatbox">
   <!-- 上部バー -->
   <div class="vn-topbar">
-    <button class="vn-back" id="back">← 前にもどる</button>
+    <button class="vn-back" id="back">← 前の画面にもどる</button>
     <div class="vn-meters" id="status"></div>
     <button class="speaker" id="speaker" title="読み上げ ON/OFF">🔊</button>
   </div>
 
   <!-- 立ち絵ステージ -->
   <div class="vn-stage" id="vn-stage">
-    <div class="vn-goal" id="goalbar"></div>
     <button class="vn-histbtn" id="histbtn">📜 やりとり</button>
     <div class="vn-figure" id="ch-av"></div>
     <div class="vn-history" id="messages"></div>
@@ -551,7 +617,7 @@ body.step-chat .wrap{overflow:visible;}
     <div class="vn-text" id="vn-current">　</div>
   </div>
 
-  <div class="clear-toast" id="clear-toast">🌸 クリア条件達成！ 安心と信頼が十分に高まりました。ふりかえりで確認できます。</div>
+  <div class="clear-toast" id="clear-toast">🌸 クリア条件達成！ 安心・信頼・納得が十分に高まりました。ふりかえりで確認できます。</div>
 
   <!-- 入力エリア -->
   <div class="composer">
@@ -609,11 +675,7 @@ function figureFor(s, calm){
   if(t==='staff'){
     return FIGURES[ calm<60 ? 'staff_low' : 'staff_high' ];
   }
-  // mother / father
-  if(parentStartsAngry(s)){
-    let mood = calm<42?'angry' : calm<72?'mid' : 'high';
-    return FIGURES[t+'_'+mood];
-  }
+  // mother / father（3段階）
   let mood = calm<45?'low' : calm<75?'mid' : 'high';
   return FIGURES[t+'_'+mood];
 }
@@ -791,83 +853,6 @@ function avatarSVG(opt){
   </svg>`;
 }
 
-
-function bgSceneSVG(kind='garden'){
-  if(kind==='office'){
-    return `
-    <defs>
-      <linearGradient id="bgOffice" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#f2efe9"/><stop offset="100%" stop-color="#efe0d0"/></linearGradient>
-    </defs>
-    <rect width="100" height="100" fill="url(#bgOffice)"/>
-    <rect x="0" y="0" width="100" height="44" fill="#f7f4ef"/>
-    <rect x="0" y="44" width="100" height="56" fill="#e9dfd1"/>
-    <rect x="36" y="9" width="28" height="10" rx="3" fill="#fffefc" stroke="#ddd4c8"/>
-    <rect x="5" y="20" width="20" height="24" rx="2" fill="#ddd2c2"/>
-    <rect x="9" y="24" width="8" height="12" rx="1" fill="#f7f5f1"/>
-    <rect x="72" y="18" width="18" height="26" rx="2" fill="#d7cab8"/>
-    <rect x="76" y="22" width="10" height="4" fill="#a7d3a6"/>
-    <rect x="76" y="29" width="10" height="3" fill="#fff5d5"/>
-    <rect x="76" y="35" width="10" height="3" fill="#d8e7ff"/>
-    <rect x="18" y="68" width="64" height="8" rx="2" fill="#b88c64"/>
-    <rect x="28" y="76" width="4" height="13" fill="#9a7254"/><rect x="68" y="76" width="4" height="13" fill="#9a7254"/>
-    <rect x="26" y="58" width="18" height="10" rx="2" fill="#e8f0fa" stroke="#c3cfda"/>
-    <rect x="47" y="55" width="10" height="13" rx="2" fill="#fff7e7" stroke="#d7ccb2"/>
-    <rect x="60" y="58" width="16" height="10" rx="2" fill="#fbe6dc" stroke="#d9c4b6"/>
-    <circle cx="86" cy="54" r="4" fill="#87b780"/><rect x="84.5" y="58" width="3" height="6" fill="#8b725b"/>
-    <rect x="0" y="64" width="100" height="36" fill="rgba(255,255,255,.18)"/>
-    `;
-  }
-  return `
-  <defs>
-    <linearGradient id="bgGarden" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#dff2f4"/><stop offset="100%" stop-color="#f8eadb"/></linearGradient>
-  </defs>
-  <rect width="100" height="100" fill="url(#bgGarden)"/>
-  <rect x="0" y="0" width="100" height="36" fill="#edf6fb"/>
-  <rect x="0" y="36" width="100" height="28" fill="#f6f0e6"/>
-  <rect x="0" y="64" width="100" height="36" fill="#e8dfd1"/>
-  <rect x="5" y="21" width="20" height="28" rx="2" fill="#ccb79b"/>
-  <rect x="11" y="27" width="7" height="9" rx="1" fill="#f6fbf4"/>
-  <rect x="72" y="24" width="18" height="18" rx="1" fill="#d66f6f"/>
-  <rect x="73" y="23" width="20" height="4" rx="1" fill="#e78080"/>
-  <rect x="76" y="27" width="10" height="4" fill="#7da26b"/>
-  <rect x="72" y="42" width="18" height="18" fill="none" stroke="#c7b39a" stroke-width="1.6"/>
-  <line x1="78" y1="42" x2="78" y2="60" stroke="#c7b39a" stroke-width="1.2"/>
-  <line x1="84" y1="42" x2="84" y2="60" stroke="#c7b39a" stroke-width="1.2"/>
-  <line x1="72" y1="48" x2="90" y2="48" stroke="#c7b39a" stroke-width="1.2"/>
-  <circle cx="8" cy="84" r="4" fill="#fffdf9" stroke="#d8cfbe"/><circle cx="7" cy="84" r=".9" fill="#4a4a4a"/><circle cx="10" cy="86" r=".9" fill="#f2c65d"/>
-  <rect x="16" y="50" width="3" height="18" fill="#c29169"/><rect x="14" y="56" width="8" height="2" fill="#e8a39a"/><rect x="14" y="61" width="8" height="2" fill="#e8a39a"/>
-  <rect x="40" y="76" width="8" height="10" rx="2" fill="#8fb5e0"/><rect x="42" y="69" width="4" height="8" fill="#b9d4ef"/>
-  <rect x="0" y="62" width="100" height="38" fill="rgba(255,255,255,.18)"/>
-  `;
-}
-function avatarData(opt={}){
-  const kind = opt.scene || (opt.role==='staff' ? 'office' : 'garden');
-  const bodyColor = opt.bodyColor || (opt.sex==='m' ? '#8f969f' : '#d8c7b6');
-  const strokeColor = opt.bodyLine || '#5f564d';
-  const shirtColor = opt.shirt || '#f9fafc';
-  const beard = opt.beard ? `<path d="M38 58 q12 12 24 0 q-3 7 -12 7 q-9 0 -12 -7 Z" fill="#4a3526" opacity=".28"/>` : '';
-  return 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${bgSceneSVG(kind)}<g opacity=".98"><path d="M32 100 L35 72 Q50 64 65 72 L68 100 Z" fill="${bodyColor}"/><path d="M41 100 L43 78 L57 78 L59 100 Z" fill="${shirtColor}"/><path d="M43 78 L50 86 L57 78" fill="none" stroke="#d7d7d7" stroke-width="1.4"/><path d="M50 85 L50 100" stroke="#c9c9c9" stroke-width="1.4"/>${beard}<g transform="translate(0,2)">${avatarSVG(opt)}</g><path d="M35 72 Q50 82 65 72" fill="none" stroke="${strokeColor}" stroke-width="1.2" opacity=".45"/></g></svg>`);
-}
-function rebuildFigures(){
-  const parentFemale = {sex:'f',hairColor:'#4b3628',bodyColor:'#d7c0ad',shirt:'#fbfcff'};
-  const parentMale   = {sex:'m',hairColor:'#3b3028',bodyColor:'#8e949d',shirt:'#fbfcff'};
-  const staffBase    = {role:'staff',sex:'f',hairColor:'#4a3526',bodyColor:'#d8c6b8',shirt:'#fbfcff',scene:'office'};
-  FIGURES['mother_low'] = avatarData({...parentFemale, f:'worried'});
-  FIGURES['mother_angry'] = avatarData({...parentFemale, f:'angry'});
-  FIGURES['mother_mid'] = avatarData({...parentFemale, f:'calm'});
-  FIGURES['mother_high'] = avatarData({...parentFemale, f:'warm'});
-  FIGURES['father_low'] = avatarData({...parentMale, f:'worried'});
-  FIGURES['father_angry'] = avatarData({...parentMale, f:'angry'});
-  FIGURES['father_mid'] = avatarData({...parentMale, f:'calm'});
-  FIGURES['father_high'] = avatarData({...parentMale, f:'warm', beard:true});
-  FIGURES['staff_low'] = avatarData({...staffBase, f:'firm'});
-  FIGURES['staff_high'] = avatarData({...staffBase, f:'warm'});
-}
-function parentStartsAngry(s){
-  const txt=`${s.title||''} ${s.desc||''} ${s.persona||''}`;
-  return /苦情|抗議|クレーム|強い口調|不信|叩かれた|友だちとのトラブル|要望/.test(txt);
-}
-
 // ============================================================
 //  指針・評価観点
 // ============================================================
@@ -1000,7 +985,7 @@ const S = {
 //  状態管理
 // ============================================================
 let cat='parent', level='easy', cur=null, turns=0, history=[];
-let state={trust:40, calm:40};
+let state={trust:40, calm:40, satisfaction:40};
 const cards=document.getElementById('cards'), msgs=document.getElementById('messages');
 const inputEl=document.getElementById('input'), sendBtn=document.getElementById('send'), fbBtn=document.getElementById('feedback');
 
@@ -1034,7 +1019,6 @@ function cardFigureFor(s){
     return FIGURES[t+'_mid'] || figureFor(s,55);
   }
   if(t==='staff') return FIGURES['staff_low'] || figureFor(s,35);
-  if(parentStartsAngry(s)) return FIGURES[t+'_angry'] || figureFor(s,20);
   return FIGURES[t+'_low'] || figureFor(s,25);
 }
 function renderCards(){
@@ -1046,7 +1030,6 @@ function renderCards(){
     d.onclick=()=>start(s); cards.appendChild(d);
   });
 }
-rebuildFigures();
 renderCards();
 initKeyPanel();
 
@@ -1111,7 +1094,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelect
 document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
 
 function start(s){
-  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s)}; clearReached=false; const ct=document.getElementById('clear-toast'); if(ct) ct.classList.remove('show');
+  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s), satisfaction:levelBase()}; clearReached=false; const ct=document.getElementById('clear-toast'); if(ct) ct.classList.remove('show');
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
   showAppStep('chat');
   document.getElementById('ch-av').innerHTML='';
@@ -1120,9 +1103,6 @@ function start(s){
   meters.dataset.sceneTitle=s.title;
   document.getElementById('ch-name').textContent=s.name;
   document.getElementById('ch-desc').textContent=sceneMetaText(s);
-  const gb=document.getElementById('goalbar');
-  if(gb && gb.parentElement && gb.parentElement.id==='vn-stage'){ document.querySelector('.vn-topbar').after(gb); }
-  gb.innerHTML=`💡 <b>この場面のゴール</b><br>${s.goal}<br><span class="pill">${GUIDE[cat]}</span>`;
   document.getElementById('result').style.display='none';
   fbBtn.disabled=false; fbBtn.textContent='途中でふりかえる';
   msgs.innerHTML='';
@@ -1165,8 +1145,9 @@ function showLine(text, faint){
 function updateStatus(){
   state.calm=Math.max(0,Math.min(100,state.calm));
   state.trust=Math.max(0,Math.min(100,state.trust));
+  state.satisfaction=Math.max(0,Math.min(100,state.satisfaction));
   const status=document.getElementById('status');
-  status.innerHTML=`<div class="meter"><span class="meter-label">安心</span><span class="bar"><i style="width:${state.calm}%"></i></span><span class="meter-value">${state.calm}</span></div><div class="meter"><span class="meter-label">信頼</span><span class="bar"><i style="width:${state.trust}%"></i></span><span class="meter-value">${state.trust}</span></div><div class="turn-count">T${turns}</div>`;
+  status.innerHTML=`<div class="meter"><span class="meter-label">安心</span><span class="bar"><i style="width:${state.calm}%"></i></span><span class="meter-value">${state.calm}</span></div><div class="meter"><span class="meter-label">信頼</span><span class="bar"><i style="width:${state.trust}%"></i></span><span class="meter-value">${state.trust}</span></div><div class="meter"><span class="meter-label">納得</span><span class="bar"><i style="width:${state.satisfaction}%"></i></span><span class="meter-value">${state.satisfaction}</span></div>`;
   updateFigure();
   checkClearCondition();
 }
@@ -1174,13 +1155,13 @@ function updateStatus(){
 let clearReached=false;
 function checkClearCondition(){
   const toast=document.getElementById('clear-toast');
-  const reached = (state.calm>=80 && state.trust>=80 && turns>=2);
+  const reached = (state.calm>=80 && state.trust>=80 && state.satisfaction>=80 && turns>=2);
   if(toast) toast.classList.toggle('show', reached);
   if(reached && !clearReached){
     clearReached=true;
     fbBtn.disabled=false;
     fbBtn.textContent='クリア！ふりかえる';
-    add('sys','🌸 クリア条件を達成しました。安心度・信頼度が十分に高まっています。ここで「ふりかえり」を押すと評価できます。');
+    add('sys','🌸 クリア条件を達成しました。安心度・信頼度・納得度が十分に高まっています。ここで「ふりかえり」を押すと評価できます。');
   }
 }
 
@@ -1250,8 +1231,8 @@ ${variationGuide}
 - 相手（保育士役）の対応の質に応じて感情をリアルに変化させてください。よい対応には和らぎ、不適切な対応にはそれらしく反応します。
 - あなたは保育士役を演じてはいけません。あくまで${roleWord()}です。
 - 会話の最後に、現在のあなたの心境を表す数値を必ず次の形式で1行だけ付けてください（この行はセリフではありません）：
-[STATE calm=±N trust=±N]
-calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜+15）。相手の対応がよければプラス、不適切ならマイナス。`;
+[STATE calm=±N trust=±N satisfaction=±N]
+calm は安心度、trust は信頼度、satisfaction は納得度の変化を表す整数（-15〜+15）。相手の対応がよければプラス、不適切ならマイナス。`;
 
   let apiMessages;
   if(isOpening){
@@ -1285,9 +1266,9 @@ calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜
     let reply=await callClaude(system, apiMessages);
     typing.remove();
     // [STATE ...] を抽出して本文から除去
-    const m=reply.match(/\[STATE\s+calm=([+-]?\d+)\s+trust=([+-]?\d+)\]/i);
+    const m=reply.match(/\[STATE\s+calm=([+-]?\d+)\s+trust=([+-]?\d+)\s+satisfaction=([+-]?\d+)\]/i);
     if(m){
-      state.calm+=parseInt(m[1],10); state.trust+=parseInt(m[2],10);
+      state.calm+=parseInt(m[1],10); state.trust+=parseInt(m[2],10); state.satisfaction+=parseInt(m[3],10);
       reply=reply.replace(m[0],'').trim();
     }
     const text=reply||'…';
@@ -1550,7 +1531,7 @@ function showResult(r){
   const axes=AXES[cat];
   const scores=r.scores.map(v=>Math.max(1,Math.min(5,Math.round(v))));
   const avg=scores.reduce((a,b)=>a+b,0)/4;
-  const clear=clearReached || (avg>=3.5 && state.trust>=70 && state.calm>=70);
+  const clear=clearReached || (avg>=3.5 && state.trust>=70 && state.calm>=70 && state.satisfaction>=70);
   const res=document.getElementById('result'), ban=document.getElementById('banner');
   res.style.display='block';
   ban.className='banner '+(clear?'clear':'');
