@@ -609,7 +609,11 @@ function figureFor(s, calm){
   if(t==='staff'){
     return FIGURES[ calm<60 ? 'staff_low' : 'staff_high' ];
   }
-  // mother / father（3段階）
+  // mother / father
+  if(parentStartsAngry(s)){
+    let mood = calm<42?'angry' : calm<72?'mid' : 'high';
+    return FIGURES[t+'_'+mood];
+  }
   let mood = calm<45?'low' : calm<75?'mid' : 'high';
   return FIGURES[t+'_'+mood];
 }
@@ -787,6 +791,83 @@ function avatarSVG(opt){
   </svg>`;
 }
 
+
+function bgSceneSVG(kind='garden'){
+  if(kind==='office'){
+    return `
+    <defs>
+      <linearGradient id="bgOffice" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#f2efe9"/><stop offset="100%" stop-color="#efe0d0"/></linearGradient>
+    </defs>
+    <rect width="100" height="100" fill="url(#bgOffice)"/>
+    <rect x="0" y="0" width="100" height="44" fill="#f7f4ef"/>
+    <rect x="0" y="44" width="100" height="56" fill="#e9dfd1"/>
+    <rect x="36" y="9" width="28" height="10" rx="3" fill="#fffefc" stroke="#ddd4c8"/>
+    <rect x="5" y="20" width="20" height="24" rx="2" fill="#ddd2c2"/>
+    <rect x="9" y="24" width="8" height="12" rx="1" fill="#f7f5f1"/>
+    <rect x="72" y="18" width="18" height="26" rx="2" fill="#d7cab8"/>
+    <rect x="76" y="22" width="10" height="4" fill="#a7d3a6"/>
+    <rect x="76" y="29" width="10" height="3" fill="#fff5d5"/>
+    <rect x="76" y="35" width="10" height="3" fill="#d8e7ff"/>
+    <rect x="18" y="68" width="64" height="8" rx="2" fill="#b88c64"/>
+    <rect x="28" y="76" width="4" height="13" fill="#9a7254"/><rect x="68" y="76" width="4" height="13" fill="#9a7254"/>
+    <rect x="26" y="58" width="18" height="10" rx="2" fill="#e8f0fa" stroke="#c3cfda"/>
+    <rect x="47" y="55" width="10" height="13" rx="2" fill="#fff7e7" stroke="#d7ccb2"/>
+    <rect x="60" y="58" width="16" height="10" rx="2" fill="#fbe6dc" stroke="#d9c4b6"/>
+    <circle cx="86" cy="54" r="4" fill="#87b780"/><rect x="84.5" y="58" width="3" height="6" fill="#8b725b"/>
+    <rect x="0" y="64" width="100" height="36" fill="rgba(255,255,255,.18)"/>
+    `;
+  }
+  return `
+  <defs>
+    <linearGradient id="bgGarden" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#dff2f4"/><stop offset="100%" stop-color="#f8eadb"/></linearGradient>
+  </defs>
+  <rect width="100" height="100" fill="url(#bgGarden)"/>
+  <rect x="0" y="0" width="100" height="36" fill="#edf6fb"/>
+  <rect x="0" y="36" width="100" height="28" fill="#f6f0e6"/>
+  <rect x="0" y="64" width="100" height="36" fill="#e8dfd1"/>
+  <rect x="5" y="21" width="20" height="28" rx="2" fill="#ccb79b"/>
+  <rect x="11" y="27" width="7" height="9" rx="1" fill="#f6fbf4"/>
+  <rect x="72" y="24" width="18" height="18" rx="1" fill="#d66f6f"/>
+  <rect x="73" y="23" width="20" height="4" rx="1" fill="#e78080"/>
+  <rect x="76" y="27" width="10" height="4" fill="#7da26b"/>
+  <rect x="72" y="42" width="18" height="18" fill="none" stroke="#c7b39a" stroke-width="1.6"/>
+  <line x1="78" y1="42" x2="78" y2="60" stroke="#c7b39a" stroke-width="1.2"/>
+  <line x1="84" y1="42" x2="84" y2="60" stroke="#c7b39a" stroke-width="1.2"/>
+  <line x1="72" y1="48" x2="90" y2="48" stroke="#c7b39a" stroke-width="1.2"/>
+  <circle cx="8" cy="84" r="4" fill="#fffdf9" stroke="#d8cfbe"/><circle cx="7" cy="84" r=".9" fill="#4a4a4a"/><circle cx="10" cy="86" r=".9" fill="#f2c65d"/>
+  <rect x="16" y="50" width="3" height="18" fill="#c29169"/><rect x="14" y="56" width="8" height="2" fill="#e8a39a"/><rect x="14" y="61" width="8" height="2" fill="#e8a39a"/>
+  <rect x="40" y="76" width="8" height="10" rx="2" fill="#8fb5e0"/><rect x="42" y="69" width="4" height="8" fill="#b9d4ef"/>
+  <rect x="0" y="62" width="100" height="38" fill="rgba(255,255,255,.18)"/>
+  `;
+}
+function avatarData(opt={}){
+  const kind = opt.scene || (opt.role==='staff' ? 'office' : 'garden');
+  const bodyColor = opt.bodyColor || (opt.sex==='m' ? '#8f969f' : '#d8c7b6');
+  const strokeColor = opt.bodyLine || '#5f564d';
+  const shirtColor = opt.shirt || '#f9fafc';
+  const beard = opt.beard ? `<path d="M38 58 q12 12 24 0 q-3 7 -12 7 q-9 0 -12 -7 Z" fill="#4a3526" opacity=".28"/>` : '';
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${bgSceneSVG(kind)}<g opacity=".98"><path d="M32 100 L35 72 Q50 64 65 72 L68 100 Z" fill="${bodyColor}"/><path d="M41 100 L43 78 L57 78 L59 100 Z" fill="${shirtColor}"/><path d="M43 78 L50 86 L57 78" fill="none" stroke="#d7d7d7" stroke-width="1.4"/><path d="M50 85 L50 100" stroke="#c9c9c9" stroke-width="1.4"/>${beard}<g transform="translate(0,2)">${avatarSVG(opt)}</g><path d="M35 72 Q50 82 65 72" fill="none" stroke="${strokeColor}" stroke-width="1.2" opacity=".45"/></g></svg>`);
+}
+function rebuildFigures(){
+  const parentFemale = {sex:'f',hairColor:'#4b3628',bodyColor:'#d7c0ad',shirt:'#fbfcff'};
+  const parentMale   = {sex:'m',hairColor:'#3b3028',bodyColor:'#8e949d',shirt:'#fbfcff'};
+  const staffBase    = {role:'staff',sex:'f',hairColor:'#4a3526',bodyColor:'#d8c6b8',shirt:'#fbfcff',scene:'office'};
+  FIGURES['mother_low'] = avatarData({...parentFemale, f:'worried'});
+  FIGURES['mother_angry'] = avatarData({...parentFemale, f:'angry'});
+  FIGURES['mother_mid'] = avatarData({...parentFemale, f:'calm'});
+  FIGURES['mother_high'] = avatarData({...parentFemale, f:'warm'});
+  FIGURES['father_low'] = avatarData({...parentMale, f:'worried'});
+  FIGURES['father_angry'] = avatarData({...parentMale, f:'angry'});
+  FIGURES['father_mid'] = avatarData({...parentMale, f:'calm'});
+  FIGURES['father_high'] = avatarData({...parentMale, f:'warm', beard:true});
+  FIGURES['staff_low'] = avatarData({...staffBase, f:'firm'});
+  FIGURES['staff_high'] = avatarData({...staffBase, f:'warm'});
+}
+function parentStartsAngry(s){
+  const txt=`${s.title||''} ${s.desc||''} ${s.persona||''}`;
+  return /苦情|抗議|クレーム|強い口調|不信|叩かれた|友だちとのトラブル|要望/.test(txt);
+}
+
 // ============================================================
 //  指針・評価観点
 // ============================================================
@@ -953,6 +1034,7 @@ function cardFigureFor(s){
     return FIGURES[t+'_mid'] || figureFor(s,55);
   }
   if(t==='staff') return FIGURES['staff_low'] || figureFor(s,35);
+  if(parentStartsAngry(s)) return FIGURES[t+'_angry'] || figureFor(s,20);
   return FIGURES[t+'_low'] || figureFor(s,25);
 }
 function renderCards(){
@@ -964,6 +1046,7 @@ function renderCards(){
     d.onclick=()=>start(s); cards.appendChild(d);
   });
 }
+rebuildFigures();
 renderCards();
 initKeyPanel();
 
