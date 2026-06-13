@@ -828,6 +828,147 @@ header>.ai-logo .logo-sub{
   .vn-dialog{max-height:166px!important;}
 }
 
+
+/* ===== 最終調整：上部固定解除・下部パラメータ復活・難易度横並び ===== */
+.vn-topbar{
+  position:relative!important;
+  top:auto!important;
+  z-index:10!important;
+}
+.vn-meters{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+.vn-meters .meter{display:none!important;}
+.mini-status-wrap{
+  background:rgba(255,253,248,.98)!important;
+  border-left:1.5px solid var(--line)!important;
+  border-right:1.5px solid var(--line)!important;
+  border-top:none!important;
+  padding:10px 12px 12px!important;
+}
+.mini-status{
+  display:flex!important;
+  gap:10px!important;
+  justify-content:center!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+}
+.mini-status .meter{
+  display:flex!important;
+  min-width:98px!important;
+  background:#fff8f0!important;
+  border:1.5px solid var(--line)!important;
+  border-radius:999px!important;
+  padding:7px 10px!important;
+}
+.mini-status .meter-label{display:block!important;font-size:12.5px!important;font-weight:800!important;color:var(--soft)!important;}
+.mini-status .meter-value{display:block!important;font-size:12.5px!important;font-weight:800!important;color:var(--soft)!important;min-width:24px!important;text-align:right!important;}
+.mini-status .bar{display:block!important;width:64px!important;height:8px!important;min-width:64px!important;}
+.levels{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  justify-content:center!important;
+  gap:10px!important;
+  margin-top:10px!important;
+}
+.level-btn{
+  width:auto!important;
+  min-width:96px!important;
+  text-align:center!important;
+  border-radius:999px!important;
+  padding:10px 18px!important;
+}
+.level-btn::after{content:none!important;display:none!important;}
+.vn-text,
+.vn-text.long-line,
+.vn-text.very-long-line{
+  font-size:19px!important;
+  line-height:1.8!important;
+}
+@media(max-width:650px){
+  .vn-text,
+  .vn-text.long-line,
+  .vn-text.very-long-line{font-size:18px!important;line-height:1.72!important;}
+  .levels{gap:8px!important;}
+  .level-btn{min-width:88px!important;padding:9px 14px!important;font-size:15px!important;}
+  .mini-status-wrap{padding:10px 10px 12px!important;}
+}
+
+
+/* ===== 固定表示解除・ヒント表示修正 ===== */
+.vn-topbar{
+  position:static!important;
+  top:auto!important;
+}
+.actions{
+  position:static!important;
+  bottom:auto!important;
+  z-index:auto!important;
+  box-shadow:none!important;
+}
+.hint-box{
+  display:none;
+  margin:0 12px 10px;
+  padding:11px 13px;
+  border-radius:14px;
+  border:1.5px solid #e8d5b9;
+  background:#fff8e8;
+  color:#6f584d;
+  font-size:14.5px;
+  line-height:1.65;
+  font-weight:700;
+}
+.hint-box.show{display:block;}
+
+
+/* ===== 名前表示を肩位置へ・半透明化 ===== */
+.vn-dialog{overflow:visible!important;}
+.vn-nameplate{
+  position:absolute!important;
+  top:-108px!important;
+  left:18px!important;
+  z-index:6!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:4px!important;
+  max-width:calc(100% - 36px)!important;
+  padding:7px 14px!important;
+  border-radius:18px!important;
+  background:rgba(255,253,248,.42)!important;
+  border:1.5px solid rgba(255,255,255,.45)!important;
+  box-shadow:0 6px 18px rgba(70,40,20,.12)!important;
+  backdrop-filter:blur(3px)!important;
+  -webkit-backdrop-filter:blur(3px)!important;
+  color:#5a4137!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.vn-nameplate b{
+  font-size:16px!important;
+  color:#5a4137!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.35)!important;
+}
+.vn-nameplate span{
+  font-size:11.5px!important;
+  color:#7c655b!important;
+}
+@media(max-width:650px){
+  .vn-nameplate{
+    top:-96px!important;
+    left:14px!important;
+    max-width:calc(100% - 28px)!important;
+    padding:6px 12px!important;
+  }
+  .vn-nameplate b{font-size:15px!important;}
+  .vn-nameplate span{font-size:11px!important;}
+}
+
 </style>
 </head>
 <body class="step-start">
@@ -910,9 +1051,9 @@ header>.ai-logo .logo-sub{
   <div class="heart-celebration" id="heart-celebration" aria-hidden="true"></div>
 
   <div class="mini-status-wrap">
-    <div class="mini-status-label">いまの変化</div>
     <div class="mini-status" id="status-bottom"></div>
   </div>
+  <div class="hint-box" id="hint-box" role="status" aria-live="polite"></div>
 
   <!-- 入力エリア -->
   <div class="composer">
@@ -1787,11 +1928,14 @@ inputEl.addEventListener('input',()=>{inputEl.style.height='auto';inputEl.style.
 document.getElementById('hint').onclick=()=>{
   if(!cur)return;
   const tips={
-    parent:'まず相手の気持ちを受け止め（共感）、次に状況を具体的に説明し、最後に今後の見通し・対応を伝える順が効果的です。',
-    child:'気持ちを言葉にして代弁し（「〜だったんだね」）、安心させてから、子ども自身が選べる提案をしてみましょう。',
-    leader:'責めずにまず受け止め、起きたことを一緒に整理し、次に試せる具体的な方法を一緒に考えると前向きになれます。'
+    parent:'まず相手の気持ちを受け止め、次に状況を具体的に説明し、最後に今後の見通しや対応を伝えてみましょう。',
+    child:'「〜だったんだね」と気持ちを言葉にして受け止め、安心してから、本人が選べる提案をしてみましょう。',
+    leader:'まず気持ちを受け止め、起きたことを一緒に整理し、次に試せる具体的な方法を考えてみましょう。'
   };
-  add('sys','💡 ヒント：'+tips[cat]+'　この場面のゴールは「'+cur.goal+'」です。');
+  const box=document.getElementById('hint-box');
+  box.textContent='💡 ヒント：'+tips[cat];
+  box.classList.add('show');
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
 };
 
 // ============================================================
