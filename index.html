@@ -241,17 +241,20 @@ body.step-select header, body.step-select #key-panel, body.step-select #chat-vie
 body.step-select #select-view{display:block!important;}
 body.step-chat header, body.step-chat #key-panel, body.step-chat #select-view{display:none!important;}
 body.step-chat #chat-view{display:block!important;}
-#select-view::before{content:"難易度を選択してください";display:block;text-align:center;font-weight:800;font-size:18px;margin:8px 0 12px;color:var(--ink);}
-.tabs{gap:7px;margin:2px 0 14px;}
-.tab{font-size:14.5px!important;padding:9px 12px!important;border-radius:999px;background:#fffdf8!important;}
+#select-view{padding:2px 0 8px;}
+.select-step{margin:10px 0 16px;}
+.select-title{font-size:18px;font-weight:900;text-align:center;color:var(--ink);margin:4px 0 10px;letter-spacing:.02em;}
+.select-title small{display:block;font-size:12px;font-weight:700;color:#9b8072;margin-top:2px;}
+.tabs{gap:8px;margin:2px 0 4px;}
+.tab{font-size:16px!important;padding:12px 16px!important;border-radius:999px;background:#fffdf8!important;min-width:96px;}
 .tab.active{background:linear-gradient(135deg,#f49a94,#ef827e)!important;color:#fff!important;border-color:transparent!important;}
-.levels{display:grid;grid-template-columns:1fr;gap:10px;text-align:left;font-size:0!important;margin:0 0 20px!important;}
+.levels{display:grid;grid-template-columns:1fr;gap:10px;text-align:left;font-size:0!important;margin:0 0 4px!important;}
 .level-btn{width:100%;font-size:17px!important;padding:15px 18px!important;text-align:left;border-radius:18px!important;background:rgba(255,253,248,.9)!important;color:var(--ink)!important;box-shadow:0 6px 18px rgba(191,116,84,.08);position:relative;}
 .level-btn::after{content:"›";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:28px;color:#d69a87;}
 .level-btn[data-level="easy"]::before{content:"🌱  ";}.level-btn[data-level="normal"]::before{content:"🌼  ";}.level-btn[data-level="hard"]::before{content:"⭐  ";}
 .level-btn.active{border-color:#ef8f88!important;background:#fff8f4!important;box-shadow:0 10px 24px rgba(239,143,136,.18)!important;}
 .cards{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;}
-.cards::before{content:"場面を選択してください";grid-column:1/-1;text-align:center;font-weight:800;font-size:18px;margin:2px 0 2px;color:var(--ink);}
+.cards::before{content:"";display:none;}
 .card{padding:9px!important;border-radius:18px!important;min-height:222px;display:flex;flex-direction:column;align-items:center;text-align:center;background:rgba(255,253,248,.9)!important;overflow:hidden;}
 .card-top{display:block!important;margin:0!important;width:100%;}
 .card .av{width:100%!important;height:120px!important;border-radius:14px!important;background:#fff6ed!important;margin:0 auto 8px!important;display:flex;align-items:flex-end;justify-content:center;}
@@ -321,17 +324,26 @@ body.step-chat .wrap{padding:0;max-width:520px;}
 </div>
 
 <div id="select-view" style="display:none">
-  <div class="tabs">
-    <button class="tab active" data-cat="parent">保護者対応</button>
-    <button class="tab" data-cat="child">子どもへの関わり</button>
-    <button class="tab" data-cat="leader">主任・園内研修</button>
-  </div>
-  <div class="levels">難易度：
-    <button class="level-btn active" data-level="easy">やさしい</button>
-    <button class="level-btn" data-level="normal">標準</button>
-    <button class="level-btn" data-level="hard">むずかしい</button>
-  </div>
-  <div class="cards" id="cards"></div>
+  <section class="select-step">
+    <div class="select-title">困っているのは誰ですか？<small>まず、練習したい相手を選びます</small></div>
+    <div class="tabs">
+      <button class="tab active" data-cat="parent">保護者</button>
+      <button class="tab" data-cat="child">子ども</button>
+      <button class="tab" data-cat="leader">保育士</button>
+    </div>
+  </section>
+  <section class="select-step">
+    <div class="select-title">難易度を選択</div>
+    <div class="levels">
+      <button class="level-btn active" data-level="easy">やさしい</button>
+      <button class="level-btn" data-level="normal">標準</button>
+      <button class="level-btn" data-level="hard">むずかしい</button>
+    </div>
+  </section>
+  <section class="select-step">
+    <div class="select-title">場面を選択</div>
+    <div class="cards" id="cards"></div>
+  </section>
 </div>
 
 <div id="chat-view" class="chatbox">
@@ -358,7 +370,7 @@ body.step-chat .wrap{padding:0;max-width:520px;}
 
   <!-- 入力エリア -->
   <div class="composer">
-    <textarea id="input" placeholder="保育士・主任として声をかけてください…"></textarea>
+    <textarea id="input" placeholder="保育士として声をかけてください…"></textarea>
     <button class="btn mic" id="mic" title="音声入力">🎤</button>
     <button class="btn" id="send">送信</button>
   </div>
@@ -672,7 +684,7 @@ const S = {
      persona:'あなたは3歳ことね。お昼寝の時間に眠くなくて「ねむれない、つまんない」と落ち着かない。無理に「寝なさい」と言われると嫌がる。気持ちを受け止め、横になって休む・静かに過ごす選択肢を示されると落ち着く。'},
     {id:'c7',name:'4歳 そら',role:'子ども',title:'給食を食べたがらない子',desc:'苦手な食材がある子への声かけ',goal:'プレッシャーなく一口挑戦できる',
      av:{sex:'m',role:'child',f:'awkward',hairColor:'#222'},
-     persona:'あなたは4歳そら。ピーマンが苦手で「きらい、たべたくない」と食が進まない。「全部食べなさい」と言われると泣きそうになる。気持ちを認められ、一口だけ・楽しい雰囲気など無理のない関わりで少し挑戦できる。'},
+     persona:'あなたは4歳そら。給食の中に苦手なものがあり、「きらい、たべたくない」と食が進まない。苦手さの理由は毎回固定せず、魚のにおい、肉の噛みにくさ、野菜の苦み、食感、見た目、初めての食材への不安、混ざることへの抵抗、周囲に見られる緊張など、保育現場で自然に起こる困り感から一つ選ぶ。「全部食べなさい」と言われると泣きそうになる。気持ちを認められ、一口だけ・楽しい雰囲気など無理のない関わりで少し挑戦できる。'},
     {id:'c8',name:'5歳 だいき',role:'子ども',title:'くり返し手が出てしまう子',desc:'思い通りにいかず手が出る子への関わり',goal:'手が出る前の気持ちに気づき別の方法で表す',
      av:{sex:'m',role:'child',f:'mad',hairColor:'#2a2018'},
      persona:'あなたは5歳だいき。積み木を崩され「だって崩されたんだもん！むかついた！」と友だちを叩いてしまった。これがくり返されている。頭ごなしに叱られると反発し心を閉ざす。気持ちを理解され、何が嫌だったか一緒に整理し別の方法を考えてもらえると少しずつ受け止める。'},
@@ -711,7 +723,7 @@ const S = {
     {id:'l2',name:'担任保育士',role:'職員',title:'保護者対応の助言',desc:'説明が苦手な職員に助言する場面',goal:'改善点を具体化し、前向きに試せるようにする',
      av:{sex:'f',f:'awkward',hairColor:'#4a3526'},
      persona:'あなたは担任保育士。保護者に「何をどこまで伝えればいいのか、いつも迷う」と相談している。抽象的な助言だと実践に移せず困る。整理の仕方・具体例・安心できる声かけを示されると実践への手応えを持てる。'},
-    {id:'l3',name:'研修参加者',role:'職員',title:'園内研修：子どもの権利',desc:'子どもの権利を保育実践に結びつける場面',goal:'日常場面に置き換えて理解を深める',
+    {id:'l3',name:'研修参加者',role:'職員',title:'保育士への助言：子どもの権利',desc:'子どもの権利を保育実践に結びつける場面',goal:'日常場面に置き換えて理解を深める',
      av:{sex:'m',f:'warm',hairColor:'#2e2620'},
      persona:'あなたは園内研修の参加者。「子どもの権利が大切なのは分かるが、日々の保育でどう考えればいいのか」と問いかけている。抽象論だけだと腑に落ちない。日常の具体場面（選択の尊重・意見を聞く等）に置き換えて説明されると深く理解できる。'}
   ]
@@ -822,7 +834,7 @@ function start(s){
   document.getElementById('result').style.display='none';
   fbBtn.disabled=true;
   msgs.innerHTML='';
-  add('sys','「'+s.title+'」の場面です（難易度：'+levelLabel()+'）。あなたは保育士・主任として声をかけてみましょう。');
+  add('sys','「'+s.title+'」の場面です（難易度：'+levelLabel()+'）。あなたは保育士として声をかけてみましょう。');
   updateStatus();
   window.scrollTo(0,0);
   aiTurn(true);
@@ -890,7 +902,7 @@ async function callClaude(system, messages, maxTokens, temperature){
   return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
 }
 
-const roleWord=()=> cat==='parent'?'保護者' : cat==='child'?'子ども' : '職員';
+const roleWord=()=> cat==='parent'?'保護者' : cat==='child'?'子ども' : '保育士';
 
 async function aiTurn(isOpening){
   const typing=document.createElement('div'); typing.className='msg them typing'; typing.textContent='…';
@@ -909,16 +921,26 @@ async function aiTurn(isOpening){
     ? '保育園の職員として、同僚に相談する自然な口調で話してください。'
     : '保護者として自然な口調で話してください。';
 
+  const variationGuide = `
+困り感のバリエーション：
+- 同じ場面でも、毎回まったく同じ設定に固定しないでください。
+- 困り感の背景は一面的に決めつけず、本人の気持ち、家庭での経験、発達段階、生活リズム、感覚の敏感さ、友だちや保育者との関係性など、保育現場で自然に起こりうる要素から変化をつけてください。
+- ただし、場面のテーマと役の設定から大きく外れないでください。
+- 「給食を食べたがらない子」の場面では、ピーマンだけに固定せず、魚のにおい、肉の噛みにくさ、野菜の苦み、食感、見た目、初めての食材への不安、混ざることへの抵抗、家庭での食経験、周囲の声かけへの抵抗感などから自然に選んでください。
+- 保護者対応では、同じ不安や訴えでも、背景にある思い（心配、疲労、過去の経験、園への期待、説明不足への不信など）を毎回少し変えてください。
+- 保育士への助言では、相談内容の背景（経験年数、迷い、失敗体験、保護者対応への苦手意識、子どもの見取りへの不安など）を毎回少し変えてください。`;
+
   const system=`あなたは保育士研修シミュレーターの中で、${roleWord()}の役を演じます。
 役の設定：${cur.persona}
 
 難易度設定：${diffNote}
+${variationGuide}
 
 ルール：
 - 必ずその人物になりきり、一人称のセリフだけを返してください。ナレーション・説明・カッコ書きは禁止。
 - 1〜3文の自然な話し言葉で。${speak}
-- 相手（保育士・主任役）の対応の質に応じて感情をリアルに変化させてください。よい対応には和らぎ、不適切な対応にはそれらしく反応します。
-- あなたは保育士・主任役を演じてはいけません。あくまで${roleWord()}です。
+- 相手（保育士役）の対応の質に応じて感情をリアルに変化させてください。よい対応には和らぎ、不適切な対応にはそれらしく反応します。
+- あなたは保育士役を演じてはいけません。あくまで${roleWord()}です。
 - 会話の最後に、現在のあなたの心境を表す数値を必ず次の形式で1行だけ付けてください（この行はセリフではありません）：
 [STATE calm=±N trust=±N]
 calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜+15）。相手の対応がよければプラス、不適切ならマイナス。`;
@@ -946,7 +968,7 @@ calm は安心度の変化、trust は信頼度の変化を表す整数（-15〜
       'あいさつや前置きから入り、本題に移る形で始めてください。'
     ];
     const pick = openings[Math.floor(Math.random()*openings.length)];
-    apiMessages=[{role:'user',content:`（保育士・主任があなたの前にいます。この場面で、あなたから最初のひとことを話しかけてください。毎回ちがう自然な切り出しにすること。今回は次の方向で：${pick} ただし設定から外れない範囲で、表現や語り口は自由に変えてください。）`}];
+    apiMessages=[{role:'user',content:`（保育士があなたの前にいます。この場面で、あなたから最初のひとことを話しかけてください。毎回ちがう自然な切り出しにすること。今回は次の方向で：${pick} ただし設定から外れない範囲で、困り感の具体的な背景も毎回少し変え、表現や語り口は自由に変えてください。）`}];
   } else {
     apiMessages=history.map(h=>({role:h.role==='them'?'assistant':'user', content:h.content}));
   }
@@ -1188,9 +1210,9 @@ fbBtn.onclick=async()=>{
   if(!cur)return;
   fbBtn.disabled=true; fbBtn.textContent='ふりかえりを作成中…';
   const axes=AXES[cat];
-  const transcript=history.map(h=>(h.role==='them'?roleWord():'保育士・主任')+'：'+h.content).join('\n');
+  const transcript=history.map(h=>(h.role==='them'?roleWord():'保育士')+'：'+h.content).join('\n');
   const system=`あなたは保育の専門家で、保育所保育指針解説（厚生労働省）に精通した研修講師です。
-保育士・主任役の対応を、温かくも具体的に評価してください。必ず次のJSON形式のみで出力し、前後に文章やマークダウンを付けないこと。
+保育士役の対応を、温かくも具体的に評価してください。必ず次のJSON形式のみで出力し、前後に文章やマークダウンを付けないこと。
 
 {
  "scores":[4つの整数(各1〜5)。順に「${axes[0]}」「${axes[1]}」「${axes[2]}」「${axes[3]}」],
@@ -1205,7 +1227,7 @@ fbBtn.onclick=async()=>{
 【やりとり】
 ${transcript}
 
-上記の保育士・主任役の対応を評価してください。`;
+上記の保育士役の対応を評価してください。`;
   try{
     const raw=await callClaude(system,[{role:'user',content:userMsg}],1200,0.3);
     const clean=raw.replace(/```json|```/g,'').trim();
