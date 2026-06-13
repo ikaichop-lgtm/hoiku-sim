@@ -1081,6 +1081,140 @@ header>.ai-logo .logo-sub{
   .composer .btn{padding:10px 11px!important;}
 }
 
+
+/* ===== 微調整：会話枠・入力欄・上部帯 ===== */
+.vn-topbar{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:8px 10px 6px!important;
+}
+.vn-meters::before{
+  color:#2f2925!important;
+  text-shadow:none!important;
+}
+.vn-back{
+  background:#fffdf9!important;
+  color:#cf7f7b!important;
+  border:1.8px solid #e7a3a0!important;
+  box-shadow:none!important;
+}
+.vn-back:hover{background:#fff6f4!important;}
+
+/* 会話枠は肩の少し下に配置し、高さを増やして文を収める */
+.vn-dialog{
+  margin:-86px 12px 12px!important;
+  min-height:244px!important;
+  padding:14px 16px 18px!important;
+  background:rgba(255,253,248,.68)!important;
+  overflow:hidden!important;
+}
+.vn-nameplate{
+  background:rgba(255,244,236,.58)!important;
+  margin:0 0 12px 0!important;
+  max-width:100%!important;
+}
+.vn-text{
+  margin-top:4px!important;
+  min-height:7.5em!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+/* 下部ゲージが会話枠と重ならないよう少し間を空ける */
+.mini-status-wrap{margin-top:8px!important;}
+
+/* 1行入力風の欄にしつつ、プレースホルダーを大きめに */
+.composer{align-items:center!important;}
+.composer textarea{
+  min-height:50px!important;
+  height:50px!important;
+  max-height:50px!important;
+  padding:12px 14px!important;
+  font-size:16px!important;
+  line-height:1.2!important;
+  overflow:hidden!important;
+}
+.composer textarea::placeholder{
+  font-size:16px!important;
+  line-height:1.2!important;
+  font-weight:700!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:650px){
+  .vn-topbar{padding:8px 10px 4px!important;}
+  .vn-dialog{
+    margin:-78px 12px 12px!important;
+    min-height:258px!important;
+    padding:14px 14px 18px!important;
+  }
+  .vn-nameplate{
+    margin-bottom:10px!important;
+    padding:7px 12px!important;
+  }
+  .vn-nameplate b{font-size:15px!important;}
+  .vn-nameplate span{font-size:11.5px!important;}
+  .vn-text{
+    min-height:7.8em!important;
+    font-size:18px!important;
+    line-height:1.72!important;
+  }
+  .composer textarea{
+    min-height:48px!important;
+    height:48px!important;
+    max-height:48px!important;
+    padding:11px 12px!important;
+    font-size:15px!important;
+  }
+  .composer textarea::placeholder{
+    font-size:14px!important;
+  }
+}
+
+
+/* ===== ヒント表示と下部戻るボタン ===== */
+.hint-box{
+  display:none;
+  margin:10px 12px 8px!important;
+  padding:12px 14px!important;
+  border-radius:14px!important;
+  border:2px solid #e8c65a!important;
+  background:#fff9d9!important;
+  color:#5f5333!important;
+  box-shadow:0 6px 14px rgba(176,139,44,.12)!important;
+}
+.hint-box.show{display:block!important;}
+.hint-title{
+  font-size:15.5px;
+  font-weight:900;
+  color:#8a6b13;
+  margin-bottom:5px;
+}
+.hint-text{
+  font-size:14.5px;
+  line-height:1.65;
+  font-weight:700;
+  color:#665a39;
+}
+.hint-back-wrap{
+  display:flex;
+  justify-content:center;
+  margin:4px 12px 10px;
+}
+.hint-back-btn{
+  border:1.8px solid #e7a3a0;
+  background:#fffdf9;
+  color:#cf7f7b;
+  border-radius:999px;
+  padding:10px 18px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.hint-back-btn:hover{background:#fff6f4;}
+
 </style>
 </head>
 <body class="step-start">
@@ -1166,10 +1300,11 @@ header>.ai-logo .logo-sub{
     <div class="mini-status" id="status-bottom"></div>
   </div>
   <div class="hint-box" id="hint-box" role="status" aria-live="polite"></div>
+  <div class="hint-back-wrap"><button class="hint-back-btn" id="back-bottom">← 前の画面にもどる</button></div>
 
   <!-- 入力エリア -->
   <div class="composer">
-    <textarea id="input" rows="1" placeholder="保育士として声をかけてください…"></textarea>
+    <textarea id="input" rows="1" placeholder="保育士として声をかけてください"></textarea>
     <button class="btn mic" id="mic" title="音声入力">🎤</button>
     <button class="btn" id="send">送信</button>
   </div>
@@ -1780,10 +1915,12 @@ document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.query
 
 function start(s){
   cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s), satisfaction:levelBase()}; clearReached=false; currentFaceMode=openingFaceMode(s); const ct=document.getElementById('clear-toast'); if(ct) ct.classList.remove('show');
+  const hintBox=document.getElementById('hint-box');
+  if(hintBox){ hintBox.classList.remove('show'); hintBox.innerHTML=''; }
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
   showAppStep('chat');
   document.getElementById('ch-av').innerHTML='';
-  inputEl.placeholder = (s.role==='保育士') ? '主任保育士として声をかけてください…' : '保育士として声をかけてください…';
+  inputEl.placeholder = (s.role==='保育士') ? '主任保育士として声をかけてください' : '保育士として声をかけてください';
   updateFigure();
   setSceneTitleSize('場面：'+s.title);
   document.getElementById('ch-name').textContent=displayNameForScene(s);
@@ -1796,7 +1933,9 @@ function start(s){
   window.scrollTo(0,0);
   aiTurn(true);
 }
-document.getElementById('back').onclick=()=>{if(window.speechSynthesis)window.speechSynthesis.cancel();showAppStep('select');};
+const goBackToSelect=()=>{if(window.speechSynthesis)window.speechSynthesis.cancel();const hintBox=document.getElementById('hint-box');if(hintBox){hintBox.classList.remove('show');hintBox.innerHTML='';}showAppStep('select');};
+document.getElementById('back').onclick=goBackToSelect;
+document.getElementById('back-bottom').onclick=goBackToSelect;
 document.getElementById('retry').onclick=()=>start(cur);
 
 function add(cls,text){
@@ -2045,7 +2184,7 @@ document.getElementById('hint').onclick=()=>{
     leader:'まず気持ちを受け止め、起きたことを一緒に整理し、次に試せる具体的な方法を考えてみましょう。'
   };
   const box=document.getElementById('hint-box');
-  box.textContent='💡 ヒント：'+tips[cat];
+  box.innerHTML='<div class="hint-title">💡ヒント</div><div class="hint-text">'+tips[cat]+'</div>';
   box.classList.add('show');
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
 };
