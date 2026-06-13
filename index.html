@@ -399,6 +399,83 @@ body.step-chat .wrap{overflow:visible;}
   .vn-meters{max-width:250px;gap:5px}.meter{padding:5px 6px}.meter-label{font-size:12px}.meter-value{font-size:11px;min-width:26px}.vn-meters .bar{min-width:48px}.vn-back,.speaker{width:38px!important;min-width:38px!important}.speaker{font-size:14px!important}.composer textarea{font-size:16.5px!important;min-height:68px!important}.actions .btn{font-size:14.5px!important;}
 }
 
+
+/* ===== 追加改善：選択画面・表情・入力・タイトル・ふりかえり ===== */
+.levels{display:flex!important;gap:10px!important;justify-content:center!important;flex-wrap:wrap!important;margin-top:10px!important;}
+.level-btn{border:1.5px solid var(--line)!important;background:var(--paper)!important;padding:10px 18px!important;border-radius:999px!important;cursor:pointer!important;color:var(--soft)!important;font-family:inherit!important;font-weight:700!important;font-size:15px!important;min-width:92px;}
+.level-btn.active{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important;box-shadow:var(--shadow)!important;}
+
+.cards{grid-template-columns:1fr!important;gap:14px!important;}
+.card{min-height:auto!important;display:block!important;padding:14px!important;text-align:left!important;}
+.card-top{display:flex!important;gap:12px!important;align-items:center!important;width:100%!important;}
+.card .av{width:94px!important;min-width:94px!important;height:94px!important;border-radius:16px!important;overflow:hidden!important;margin:0!important;display:block!important;}
+.card .role{font-size:12px!important;padding:4px 10px!important;margin-bottom:6px!important;}
+.card h3{font-size:18px!important;line-height:1.45!important;margin:0 0 4px!important;}
+.card p{font-size:14.5px!important;line-height:1.65!important;-webkit-line-clamp:unset!important;display:block!important;overflow:visible!important;margin:0 0 8px!important;}
+.card .goal{display:inline-block;font-size:12.5px!important;line-height:1.5!important;padding:5px 10px!important;}
+
+.vn-topbar{min-height:124px!important;align-items:flex-start!important;padding:12px 10px 10px!important;}
+.vn-meters{display:grid!important;grid-template-columns:1fr 1fr auto!important;gap:8px 8px!important;align-items:center!important;justify-content:stretch!important;width:100%;max-width:none!important;margin:0 auto!important;}
+.vn-meters::before{content:"場面：" attr(data-scene-title)!important;grid-column:1/-1;display:block;text-align:left;font-size:20px!important;font-weight:900!important;line-height:1.35!important;margin-bottom:4px;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;color:#fff!important;text-shadow:0 2px 8px rgba(70,40,20,.18);}
+.meter{padding:8px 10px!important;min-height:38px;}
+.meter-label{font-size:14px!important;}
+.meter-value{font-size:14px!important;}
+.turn-count{align-self:center;font-size:14px!important;color:#fff;background:rgba(255,255,255,.18);border-radius:999px;padding:8px 10px;}
+.vn-dialog{padding:16px 16px 18px!important;}
+.vn-nameplate{max-width:calc(100% - 28px)!important;display:flex!important;flex-wrap:wrap!important;gap:6px!important;align-items:center!important;}
+.vn-nameplate b{font-size:16px!important;line-height:1.3!important;}
+.vn-nameplate span{font-size:12px!important;line-height:1.3!important;margin-left:0!important;}
+.vn-text{font-size:19px!important;line-height:1.8!important;min-height:4.2em!important;}
+
+.composer{display:grid!important;grid-template-columns:1fr auto auto!important;gap:8px!important;padding:12px!important;align-items:stretch!important;}
+.composer textarea{min-height:106px!important;max-height:220px!important;border-radius:18px!important;font-size:17px!important;line-height:1.65!important;padding:14px 14px!important;}
+.composer .btn{border-radius:16px!important;padding:12px 14px!important;font-size:15px!important;align-self:stretch!important;}
+.mic{width:52px!important;}
+.actions{display:flex!important;gap:8px!important;justify-content:space-between!important;align-items:center!important;padding:10px 12px 14px!important;border:0!important;background:rgba(255,253,248,.96)!important;}
+.actions .btn{flex:1 1 auto!important;padding:12px 14px!important;border-radius:16px!important;font-size:14.5px!important;}
+#feedback{font-weight:800!important;}
+
+@media(max-width:650px){
+  .wrap{padding:14px 10px 38px!important;}
+  .composer{grid-template-columns:1fr 52px!important;}
+  #send{grid-column:1 / -1!important;}
+  .actions{flex-direction:column!important;}
+  .actions .btn{width:100%!important;}
+  .card .av{width:86px!important;min-width:86px!important;height:86px!important;}
+}
+
+
+/* ===== ふりかえり画面・戻るボタンの最終調整 ===== */
+.banner h2,
+#result-title{
+  font-family:"BIZ UDPGothic","Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",sans-serif!important;
+  font-weight:800!important;
+  letter-spacing:.02em!important;
+}
+.sprout{
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif!important;
+  font-size:20px!important;
+}
+.vn-back{
+  width:auto!important;
+  min-width:112px!important;
+  height:40px!important;
+  padding:0 14px!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:40px!important;
+  border:1.5px solid rgba(255,255,255,.5)!important;
+  background:rgba(255,255,255,.24)!important;
+  color:#fff!important;
+  border-radius:999px!important;
+  white-space:nowrap!important;
+}
+.vn-back::before{content:none!important;display:none!important;}
+.vn-back:hover{background:rgba(255,255,255,.34)!important;}
+@media(max-width:650px){
+  .vn-back{min-width:104px!important;padding:0 11px!important;font-size:13px!important;}
+}
+
 </style>
 </head>
 <body class="step-start">
@@ -455,7 +532,7 @@ body.step-chat .wrap{overflow:visible;}
 <div id="chat-view" class="chatbox">
   <!-- 上部バー -->
   <div class="vn-topbar">
-    <button class="vn-back" id="back">← もどる</button>
+    <button class="vn-back" id="back">← 前にもどる</button>
     <div class="vn-meters" id="status"></div>
     <button class="speaker" id="speaker" title="読み上げ ON/OFF">🔊</button>
   </div>
@@ -489,10 +566,10 @@ body.step-chat .wrap{overflow:visible;}
 
   <div class="result" id="result">
     <div class="banner" id="banner">
-      <span class="sprout" style="left:20%;animation-delay:.1s">🌿</span>
-      <span class="sprout" style="left:42%;animation-delay:.3s">🍃</span>
-      <span class="sprout" style="left:64%;animation-delay:.2s">🌿</span>
-      <span class="sprout" style="left:82%;animation-delay:.4s">🍃</span>
+      <span class="sprout" style="left:26%;animation-delay:.1s">🌱</span>
+      <span class="sprout" style="left:42%;animation-delay:.3s">🌱</span>
+      <span class="sprout" style="left:58%;animation-delay:.2s">🌱</span>
+      
       <div style="font-size:38px" id="result-icon">🌱</div>
       <h2 id="result-title"></h2>
       <div class="sub" id="result-sub"></div>
@@ -525,14 +602,15 @@ function figureType(s){
 function figureFor(s, calm){
   const t=figureType(s);
   if(t==='boy'||t==='girl'){
-    let mood = calm<25?'cry' : calm<45?'angry' : calm<70?'mid' : 'high';
+    const initialMood = inferSceneEmotion(s)==='cry' ? 'cry' : 'angry';
+    let mood = calm<25 ? initialMood : calm<48 ? 'angry' : calm<72 ? 'mid' : 'high';
     return FIGURES[t+'_'+mood];
   }
   if(t==='staff'){
     return FIGURES[ calm<60 ? 'staff_low' : 'staff_high' ];
   }
   // mother / father（3段階）
-  let mood = calm<40?'low' : calm<70?'mid' : 'high';
+  let mood = calm<45?'low' : calm<75?'mid' : 'high';
   return FIGURES[t+'_'+mood];
 }
 // 立ち絵を更新（フェードで自然に）
@@ -848,9 +926,32 @@ const inputEl=document.getElementById('input'), sendBtn=document.getElementById(
 function levelBase(){ return level==='hard'?20 : level==='normal'?30 : 42; }
 function levelLabel(){ return level==='hard'?'むずかしい' : level==='normal'?'標準' : 'やさしい'; }
 
+function inferSceneEmotion(s){
+  const txt=`${s.title||''} ${s.desc||''} ${s.persona||''}`;
+  if(s.role==='保護者' || s.role==='保育士') return 'anxious';
+  if(/大泣き|泣いて|泣きそう|うわーん|おうちかえる|離れたくなくて|登園しぶり|おもらし|抱っこ/.test(txt)) return 'cry';
+  if(/怒|噛ん|取り合い|手が出|乱暴|ごまかし|したがらない|やだ|切り替え|輪に入れない|眠れない|違うことをしたがる/.test(txt)) return 'angry';
+  return 'mid';
+}
+function initialCalmFor(s){
+  if(s.role==='保護者') return level==='hard' ? 18 : 24;
+  if(s.role==='保育士') return level==='hard' ? 26 : 34;
+  const mood=inferSceneEmotion(s);
+  if(mood==='cry') return 12;
+  if(mood==='angry') return 30;
+  return 48;
+}
+function sceneMetaText(s){
+  return s.role==='保護者' ? '保護者' : s.role==='子ども' ? '子ども' : '保育士';
+}
 function cardFigureFor(s){
   const t=figureType(s);
-  if(t==='boy'||t==='girl') return FIGURES[t+'_mid'] || figureFor(s,55); // 不安顔（泣き顔ではない）
+  const mood=inferSceneEmotion(s);
+  if(t==='boy'||t==='girl'){
+    if(mood==='cry') return FIGURES[t+'_cry'] || figureFor(s,15);
+    if(mood==='angry') return FIGURES[t+'_angry'] || figureFor(s,35);
+    return FIGURES[t+'_mid'] || figureFor(s,55);
+  }
   if(t==='staff') return FIGURES['staff_low'] || figureFor(s,35);
   return FIGURES[t+'_low'] || figureFor(s,25);
 }
@@ -927,7 +1028,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelect
 document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
 
 function start(s){
-  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:levelBase()}; clearReached=false; const ct=document.getElementById('clear-toast'); if(ct) ct.classList.remove('show');
+  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s)}; clearReached=false; const ct=document.getElementById('clear-toast'); if(ct) ct.classList.remove('show');
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
   showAppStep('chat');
   document.getElementById('ch-av').innerHTML='';
@@ -935,7 +1036,7 @@ function start(s){
   const meters=document.getElementById('status');
   meters.dataset.sceneTitle=s.title;
   document.getElementById('ch-name').textContent=s.name;
-  document.getElementById('ch-desc').textContent=s.role+'・'+s.title;
+  document.getElementById('ch-desc').textContent=sceneMetaText(s);
   const gb=document.getElementById('goalbar');
   if(gb && gb.parentElement && gb.parentElement.id==='vn-stage'){ document.querySelector('.vn-topbar').after(gb); }
   gb.innerHTML=`💡 <b>この場面のゴール</b><br>${s.goal}<br><span class="pill">${GUIDE[cat]}</span>`;
