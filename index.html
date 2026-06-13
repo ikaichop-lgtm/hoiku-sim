@@ -121,6 +121,83 @@ header p{margin:0;color:var(--soft);font-size:14px}
   .vn-stage{height:42vh;min-height:240px}
   .vn-text{font-size:18px}
 }
+
+
+/* ===== 2026 UI改善：ロゴに合わせた暖色背景・読みやすさ・重なり解消 ===== */
+:root{
+  --bg:#fff1df;
+  --paper:#fffdf8;
+  --ink:#3a3127;
+  --soft:#75685a;
+  --accent:#e79a78;
+  --accent2:#8fae7a;
+  --line:#ead6bd;
+  --you:#edf6e9;
+  --them:#fff1e8;
+  --shadow:0 10px 28px rgba(142,95,56,.15);
+}
+body{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(255,198,170,.38),transparent 34%),
+    radial-gradient(circle at 88% 18%,rgba(255,221,155,.30),transparent 34%),
+    radial-gradient(circle at 18% 86%,rgba(255,186,150,.24),transparent 35%),
+    linear-gradient(180deg,#fff6e9 0%,#ffe9d3 100%);
+  font-size:16px;
+}
+.wrap{max-width:980px;padding-top:26px}
+header p, .src, .levels, .role, .goal, .status, .tip, .note, #keyStatus{font-size:15px!important}
+h1{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;font-size:30px}
+.panel,.card,.chatbox,.result{border-color:rgba(234,205,174,.95);box-shadow:0 6px 20px rgba(142,95,56,.10)}
+.tab,.level-btn{font-size:16px;padding:10px 22px;background:rgba(255,253,248,.94)}
+.card{padding:18px 20px;border-radius:22px;background:rgba(255,253,248,.96)}
+.card h3{font-size:18px;line-height:1.45}
+.card p{font-size:15.5px;color:#5f554b;line-height:1.75}
+.goal{font-size:14px!important;padding:6px 10px;border-radius:10px;background:#fff2e4;color:#c96f52}
+.av{width:72px;height:72px;background:#fff4e8}
+.av img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.btn,.vn-back{font-size:16px}
+#key-panel p{font-size:15.5px!important}.composer textarea{font-size:16px}
+
+/* 会話場面は読みやすい現行テイストを残す */
+.vn-dialog,.vn-text,.messages,.composer textarea{
+  font-family:'Zen Maru Gothic',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;
+}
+
+/* ゴール表示が人物に被らないよう、上部に専用スペースを確保 */
+.vn-stage{height:50vh;min-height:360px;background:linear-gradient(180deg,#fff1df 0%,#f5d9bf 100%)}
+.vn-goal{
+  position:absolute;top:10px;left:12px;right:72px;z-index:6;
+  background:rgba(255,253,248,.96);border-color:rgba(234,214,189,.98);
+  border-radius:14px;padding:9px 12px;font-size:14px;line-height:1.55;
+  box-shadow:0 4px 16px rgba(120,85,55,.10);
+}
+.vn-goal .pill{font-size:12.5px;margin-top:4px}
+.vn-figure{top:92px;bottom:0;left:0;right:0;inset:92px 0 0 0;align-items:flex-end}
+.vn-figure img{object-fit:contain;object-position:center bottom;background:transparent}
+.vn-histbtn{font-size:12.5px;padding:6px 11px;z-index:7}
+
+/* 名前表示と会話文の重なりを解消 */
+.vn-dialog{padding:16px 18px 18px;min-height:138px}
+.vn-nameplate{
+  position:static;display:inline-block;margin:0 0 10px 0;
+  font-size:16px;padding:5px 18px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.18)
+}
+.vn-nameplate b{font-size:16px}.vn-nameplate span{font-size:12.5px}
+.vn-text{font-size:19px;line-height:1.85;margin-top:0;clear:both}
+.vn-topbar{background:rgba(255,253,248,.96)}
+.vn-meters{font-size:13px}
+
+@media(max-width:650px){
+  body{font-size:16px}.wrap{padding:16px 12px 44px}
+  .tab,.level-btn{font-size:15.5px;padding:9px 16px}
+  .card h3{font-size:17px}.card p{font-size:15px}.av{width:66px;height:66px}
+  .vn-stage{height:46vh;min-height:320px}
+  .vn-goal{right:58px;font-size:13px;padding:8px 10px}
+  .vn-figure{top:96px;inset:96px 0 0 0}
+  .vn-dialog{min-height:142px}.vn-text{font-size:18px}
+}
+
 </style>
 </head>
 <body>
@@ -547,7 +624,8 @@ function renderCards(){
   cards.innerHTML='';
   S[cat].forEach(s=>{
     const d=document.createElement('div'); d.className='card';
-    d.innerHTML=`<div class="card-top"><div class="av">${avatarSVG(s.av)}</div><div><div class="role">${s.role}</div><h3>${s.title}</h3></div></div><p>${s.desc}</p><span class="goal">🎯 ${s.goal}</span>`;
+    const cardImg=figureFor(s,0);
+    d.innerHTML=`<div class="card-top"><div class="av"><img src="${cardImg}" alt="${s.name}"></div><div><div class="role">${s.role}</div><h3>${s.title}</h3></div></div><p>${s.desc}</p><span class="goal">🎯 ${s.goal}</span>`;
     d.onclick=()=>start(s); cards.appendChild(d);
   });
 }
