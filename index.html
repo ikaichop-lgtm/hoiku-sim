@@ -1252,6 +1252,112 @@ header>.ai-logo .logo-sub{
     overflow:visible!important;
   }
 }
+
+/* ===== 声かけ入力をポップアップ化 ===== */
+.composer-launch-wrap{padding:12px;background:rgba(255,253,248,.96);}
+.composer-launch{width:100%;border:2px solid #efb4ac;background:#fffdf9;color:#7b5b51;border-radius:20px;padding:15px 18px;font:800 17px/1.35 inherit;cursor:pointer;box-shadow:0 8px 18px rgba(168,112,92,.10);}
+.composer-launch:hover{background:#fff7f3;}
+.composer-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:flex-end;justify-content:center;}
+.composer-modal.open{display:flex;}
+.composer-modal-backdrop{position:absolute;inset:0;background:rgba(54,39,32,.42);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+.composer-modal-panel{position:relative;width:min(100%,520px);background:#fffdf9;border-radius:24px 24px 0 0;box-shadow:0 -16px 40px rgba(70,40,20,.24);padding:14px 12px calc(14px + env(safe-area-inset-bottom));animation:composerUp .22s ease-out;}
+@keyframes composerUp{from{transform:translateY(100%);opacity:.4}to{transform:translateY(0);opacity:1}}
+.composer-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 4px 10px 8px;font-size:17px;font-weight:900;color:#5f4b43;}
+.composer-close{width:40px;height:40px;border:0;border-radius:50%;background:#fff0eb;color:#bd746f;font-size:27px;line-height:1;cursor:pointer;}
+.composer-modal .composer{display:grid!important;grid-template-columns:1fr 58px!important;gap:9px!important;padding:0!important;background:transparent!important;}
+.composer-modal .composer textarea{grid-column:1/-1!important;display:block!important;width:100%!important;height:150px!important;min-height:150px!important;max-height:42vh!important;overflow-y:auto!important;white-space:pre-wrap!important;font-size:17px!important;line-height:1.65!important;padding:14px!important;border-radius:18px!important;}
+.composer-modal .composer #mic{grid-column:2!important;grid-row:2!important;}
+.composer-modal .composer #send{grid-column:1!important;grid-row:2!important;min-height:54px!important;border-radius:17px!important;font-size:17px!important;}
+body.composer-open{overflow:hidden;}
+
+
+
+/* ===== 2026-06-13 パラメータ統合・縦3列・戻るボタン統一 ===== */
+/* パラメータを会話の半透明枠内へ自然に統合 */
+.vn-dialog .mini-status-wrap{
+  margin:16px 0 0!important;
+  padding:12px 0 0!important;
+  border:0!important;
+  border-top:1.5px solid rgba(231,202,187,.72)!important;
+  background:transparent!important;
+}
+.vn-dialog .mini-status{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:8px!important;
+  width:100%!important;
+}
+.vn-dialog .mini-status .meter{
+  display:grid!important;
+  grid-template-columns:48px minmax(0,1fr) 34px!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:8px 11px!important;
+  border:1px solid rgba(231,202,187,.76)!important;
+  border-radius:12px!important;
+  background:rgba(255,255,255,.34)!important;
+  box-shadow:none!important;
+}
+.vn-dialog .mini-status .meter-label{
+  font-size:13px!important;
+  font-weight:800!important;
+  color:#765f55!important;
+  text-align:left!important;
+}
+.vn-dialog .mini-status .bar{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  height:8px!important;
+  background:rgba(225,194,183,.62)!important;
+}
+.vn-dialog .mini-status .meter-value{
+  display:block!important;
+  min-width:34px!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  color:#765f55!important;
+  text-align:right!important;
+}
+/* 上下の「前の画面にもどる」を完全に同サイズへ */
+.vn-back,
+.hint-back-btn{
+  width:196px!important;
+  min-width:196px!important;
+  height:44px!important;
+  padding:0 16px!important;
+  font-family:inherit!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:42px!important;
+  border-radius:999px!important;
+  box-sizing:border-box!important;
+}
+/* 上部ボタン縮小分を活かし、人物を少し上へ */
+.vn-figure{
+  transform:translateY(-12px)!important;
+}
+.vn-stage{
+  min-height:284px!important;
+}
+@media(max-width:650px){
+  .vn-back,
+  .hint-back-btn{
+    width:188px!important;
+    min-width:188px!important;
+    height:42px!important;
+    padding:0 14px!important;
+    font-size:13.5px!important;
+    line-height:40px!important;
+  }
+  .vn-figure{transform:translateY(-10px)!important;}
+  .vn-dialog .mini-status-wrap{margin-top:14px!important;padding-top:10px!important;}
+  .vn-dialog .mini-status{gap:7px!important;}
+  .vn-dialog .mini-status .meter{padding:7px 10px!important;grid-template-columns:44px minmax(0,1fr) 32px!important;}
+}
+
 </style>
 </head>
 <body class="step-start">
@@ -1324,24 +1430,36 @@ header>.ai-logo .logo-sub{
     <div class="vn-history" id="messages"></div>
   </div>
 
-  <!-- セリフ枠 -->
+  <!-- セリフ枠（パラメータを枠内に統合） -->
   <div class="vn-dialog">
     <div class="vn-nameplate"><b id="ch-name"></b><span id="ch-desc"></span></div>
     <div class="vn-text" id="vn-current">　</div>
+    <div class="mini-status-wrap">
+      <div class="mini-status" id="status-bottom"></div>
+    </div>
   </div>
 
   <div class="clear-toast" id="clear-toast">🌸 クリア条件達成！ 安心・納得・信頼が十分に高まりました。ふりかえりへ移動します。</div>
   <div class="heart-celebration" id="heart-celebration" aria-hidden="true"></div>
 
-  <div class="mini-status-wrap">
-    <div class="mini-status" id="status-bottom"></div>
+  <!-- 入力エリア：ポップアップ起動 -->
+  <div class="composer-launch-wrap">
+    <button class="composer-launch" id="open-composer" type="button">💬 保育士として声をかける</button>
   </div>
 
-  <!-- 入力エリア -->
-  <div class="composer">
-    <textarea id="input" rows="1" placeholder="保育士として声をかけてください"></textarea>
-    <button class="btn mic" id="mic" title="音声入力">🎤</button>
-    <button class="btn" id="send">送信</button>
+  <div class="composer-modal" id="composer-modal" aria-hidden="true">
+    <div class="composer-modal-backdrop" id="composer-backdrop"></div>
+    <div class="composer-modal-panel" role="dialog" aria-modal="true" aria-labelledby="composer-modal-title">
+      <div class="composer-modal-head">
+        <div id="composer-modal-title">保育士として声をかけてください</div>
+        <button class="composer-close" id="close-composer" type="button" aria-label="閉じる">×</button>
+      </div>
+      <div class="composer">
+        <textarea id="input" rows="4" placeholder="保育士として声をかけてください"></textarea>
+        <button class="btn mic" id="mic" title="音声入力">🎤</button>
+        <button class="btn" id="send">送信</button>
+      </div>
+    </div>
   </div>
   <div class="actions">
     <button class="btn secondary" id="feedback" disabled>途中でふりかえる</button>
@@ -1959,6 +2077,8 @@ function start(s){
   showAppStep('chat');
   document.getElementById('ch-av').innerHTML='';
   inputEl.placeholder = (s.role==='保育士') ? '主任保育士として声をかけてください' : '保育士として声をかけてください';
+  const modalTitle=document.getElementById('composer-modal-title'); if(modalTitle) modalTitle.textContent=inputEl.placeholder;
+  const openBtn=document.getElementById('open-composer'); if(openBtn) openBtn.textContent='💬 '+inputEl.placeholder.replace('ください','る');
   updateFigure();
   setSceneTitleSize('場面：'+s.title);
   document.getElementById('ch-name').textContent=displayNameForScene(s);
@@ -2208,10 +2328,36 @@ async function sendMessage(){
   add('you',txt); history.push({role:'you',content:txt});
   turns++; fbBtn.disabled=false; if(!clearReached) fbBtn.textContent='途中でふりかえる';
   await aiTurn(false);
+  closeComposer();
 }
 sendBtn.onclick=sendMessage;
 inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
 inputEl.addEventListener('input',()=>{inputEl.style.height='auto';inputEl.style.height=Math.min(inputEl.scrollHeight,130)+'px';});
+
+// 声かけ入力ポップアップ
+const composerModal=document.getElementById('composer-modal');
+const openComposerBtn=document.getElementById('open-composer');
+const closeComposerBtn=document.getElementById('close-composer');
+const composerBackdrop=document.getElementById('composer-backdrop');
+const composerModalTitle=document.getElementById('composer-modal-title');
+function openComposer(){
+  if(!composerModal) return;
+  composerModal.classList.add('open');
+  composerModal.setAttribute('aria-hidden','false');
+  document.body.classList.add('composer-open');
+  setTimeout(()=>inputEl.focus(),80);
+}
+function closeComposer(){
+  if(!composerModal) return;
+  composerModal.classList.remove('open');
+  composerModal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('composer-open');
+}
+if(openComposerBtn) openComposerBtn.onclick=openComposer;
+if(closeComposerBtn) closeComposerBtn.onclick=closeComposer;
+if(composerBackdrop) composerBackdrop.onclick=closeComposer;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&composerModal?.classList.contains('open')) closeComposer();});
+
 
 // ヒント
 document.getElementById('hint').onclick=()=>{
