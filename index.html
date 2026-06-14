@@ -2311,7 +2311,7 @@ function updateStatus(){
   const bottom=document.getElementById('status-bottom');
   if(status) status.innerHTML='';
   if(bottom){
-    bottom.innerHTML='<div class="clear-guide">達成の目安：3項目すべて70以上＋2往復以上</div>'+meterHTML;
+    bottom.innerHTML=meterHTML+'<div class="clear-guide">達成の目安：3項目すべて70以上＋会話を2往復</div>';
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       bottom.querySelectorAll('.meter').forEach(meter=>{
         const from=Number(meter.dataset.from);
