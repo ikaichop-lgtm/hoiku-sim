@@ -1509,6 +1509,16 @@ body.composer-open{overflow:hidden;}
   overflow-wrap:anywhere!important;
   text-align:left!important;
 }
+#key-panel .start-terms-check .terms-agree-text{
+  font-size:clamp(10.5px,3.2vw,13.5px)!important;
+  line-height:1.55!important;
+  letter-spacing:-.02em!important;
+}
+#key-panel .start-terms-check .terms-line{
+  display:block!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+}
 
 </style>
 </head>
@@ -1534,7 +1544,7 @@ body.composer-open{overflow:hidden;}
   <div id="keyStatus" style="font-size:12.5px;margin-top:8px"></div>
   <label class="start-terms-check" for="termsAgree" style="margin-top:14px;margin-bottom:12px">
     <input type="checkbox" id="termsAgree">
-    <span>利用規約を確認し、無断転載・複製・再配布・改変公開を行わないことに同意します。</span>
+    <span class="terms-agree-text"><span class="terms-line">利用規約を確認し、無断転載・複製・再配布・</span><span class="terms-line">改変公開を行わないことに同意します。</span></span>
   </label>
 
   <section class="start-terms" aria-labelledby="terms-title">
