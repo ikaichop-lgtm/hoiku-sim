@@ -1392,6 +1392,24 @@ body.composer-open{overflow:hidden;}
   white-space:nowrap!important;
 }
 
+
+/* ===== 達成目安の可視化 ===== */
+.vn-dialog .mini-status .clear-guide{
+  font-size:13px;font-weight:800;color:#7a684f;text-align:center;
+  padding:7px 10px;border-radius:10px;background:rgba(255,247,218,.72);
+  border:1px solid rgba(224,184,76,.48);margin-bottom:1px;
+}
+.vn-dialog .mini-status .bar{position:relative!important;overflow:visible!important;}
+.vn-dialog .mini-status .bar::after{
+  content:"";position:absolute;left:70%;top:-4px;width:2px;height:16px;
+  background:#d79f2b;border-radius:2px;box-shadow:0 0 0 2px rgba(255,255,255,.62);
+  z-index:3;
+}
+.vn-dialog .mini-status .bar::before{
+  content:"目安";position:absolute;left:70%;top:-18px;transform:translateX(-50%);
+  font-size:9px;font-weight:900;color:#a57614;white-space:nowrap;z-index:4;
+}
+
 </style>
 </head>
 <body class="step-start">
@@ -1474,7 +1492,7 @@ body.composer-open{overflow:hidden;}
     </div>
   </div>
 
-  <div class="clear-toast" id="clear-toast">🌸 クリア条件達成！ 安心・納得・信頼が十分に高まりました。ふりかえりへ移動します。</div>
+  <div class="clear-toast" id="clear-toast">🌸 クリア条件達成！ 安心・納得・信頼がそれぞれ70以上になりました。</div>
   <div class="heart-celebration" id="heart-celebration" aria-hidden="true"></div>
 
   <!-- 入力エリア：ポップアップ起動 -->
@@ -1612,9 +1630,9 @@ function detectFaceModeFromText(text){
   const txt=`${text||''}`;
   if(!cur) return '';
   if(cur.role==='保護者'){
-    if(/なんで|どうして|ひどい|困ります|困るんですが|困るのですが|納得でき|信じられ|ありえない|聞いていな|聞いてない|ちゃんと|怒|説明して|強く言|それはおかしい|どういうこと|許せない|不快|不信|責任|困惑|腹が立/.test(txt)) return 'angry';
+    if(/なんで|どうして|ひどい|困ります|困るんですが|困るのですが|納得でき|信じられ|ありえない|聞いていな|聞いてない|ちゃんと|怒|説明して|強く言|それはおかしい|どういうこと|許せない|不快|不信|責任|困惑|腹が立|私が悪いんですか|ちゃんと見て|もういいです/.test(txt)) return 'angry';
     if(isAngryParentScene(cur) && /[!?！？]|ですか|でしょうか|ますか/.test(txt) && !/ありがとう|安心しました|わかりました|助かります|お願いします/.test(txt)) return 'angry';
-    if(/心配|不安|気にな|大丈夫|どうしたら|困って|申し訳|すみません|気がかり|迷って|モヤモヤ|気になって/.test(txt)) return 'low';
+    if(/心配|不安|気にな|大丈夫|どうしたら|困って|申し訳|すみません|気がかり|迷って|モヤモヤ|気になって|涙|泣きそう|もう無理|私が悪い|どうすればいい/.test(txt)) return 'low';
     if(/ありがとう|ありがとうございます|安心しました|わかりました|助かります|それなら|お願いします|納得しました|そうなんですね/.test(txt)) return 'high';
     return isAngryParentScene(cur) ? 'angry' : 'low';
   }
@@ -2215,10 +2233,9 @@ function start(s){
   updateStatus();
   window.scrollTo(0,0);
   if(cat==='parent_interview'){
-    const guidance='個人面談は、保育士からの働きかけで始まります。まず、挨拶や面談の目的、園での子どもの姿などを伝えてみましょう。';
+    const guidance='個人面談は、保育士からの働きかけで始まります。下の「保護者と対話をする」ボタンを押し、挨拶や面談の目的、園での子どもの姿などを伝えてみましょう。';
     add('sys',guidance);
-    showLine('（まず、保育士から面談を始めてください）', true);
-    setTimeout(()=>openComposer(),350);
+    showLine('（「保護者と対話をする」を押して、面談を始めてください）', true);
   }else{
     aiTurn(true);
   }
@@ -2294,7 +2311,7 @@ function updateStatus(){
   const bottom=document.getElementById('status-bottom');
   if(status) status.innerHTML='';
   if(bottom){
-    bottom.innerHTML=meterHTML;
+    bottom.innerHTML='<div class="clear-guide">達成の目安：3項目すべて70以上＋2往復以上</div>'+meterHTML;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       bottom.querySelectorAll('.meter').forEach(meter=>{
         const from=Number(meter.dataset.from);
@@ -2344,15 +2361,14 @@ function playHeartCelebration(){
 let clearReached=false;
 function checkClearCondition(){
   const toast=document.getElementById('clear-toast');
-  const reached = (state.calm>=80 && state.trust>=80 && state.satisfaction>=80 && turns>=2);
+  const reached = (state.calm>=70 && state.trust>=70 && state.satisfaction>=70 && turns>=2);
   if(toast) toast.classList.toggle('show', reached);
   if(reached && !clearReached){
     clearReached=true;
     fbBtn.disabled=false;
     fbBtn.textContent='クリア！ふりかえる';
     playHeartCelebration();
-    add('sys','🌸 クリア条件を達成しました。ふりかえりへ移動します。');
-    setTimeout(()=>{ if(document.getElementById('result').style.display!=='block' && !fbBtn.disabled){ fbBtn.click(); } }, 1200);
+    add('sys','🌸 クリア条件を達成しました。画面の「クリア！ふりかえる」から、好きなタイミングで振り返れます。');
   }
 }
 
@@ -2415,6 +2431,7 @@ async function aiTurn(isOpening){
 - 「給食を食べたがらない子」の場面では、ピーマンだけに固定せず、魚のにおい、肉の噛みにくさ、野菜の苦み、食感、見た目、初めての食材への不安、混ざることへの抵抗、家庭での食経験、周囲に見られる緊張などから自然に選んでください。
 - 保護者対応（お迎え時・個人面談）では、同じ不安や訴えでも、心配、疲労、過去の経験、園への期待、説明不足への不信、家庭内の意見の違い、仕事の都合、子どもから聞いた話などを毎回変えてください。
 - 怒りが強い保護者、とくに父親の場面では、常にではなく自然な頻度で「どういうことだよ！」「ちゃんと説明しろよ！」「しっかり見てくれよ！」「何とかしろよ！」「それで済むと思ってるのか！」など、怒りをあらわにする語尾や命令調を混ぜてください。感情が高ぶっている間は「〜だろ！」「〜しろよ！」のような強い表現を使い、丁寧な対応を受けると徐々に弱めてください。
+- 母親の場面でも、感情が高ぶると涙を流すほど動揺する、怒りをあらわにする、言葉が途切れる、責める口調と自責的な口調が交互に出るなど、情緒が不安定になる反応を自然に混ぜてください。例：「もう、どうしたらいいんですか…」「私が悪いんですか？」「ちゃんと見てくれていたんですか！」。ただし毎回同じ反応にせず、涙、不安、怒り、混乱、落ち込みの組み合わせを変えてください。丁寧に受け止められると、少しずつ落ち着くようにしてください。
 - 個人面談では、会話は保育士側から始まります。保護者は、保育士の最初の働きかけを受けてから自然に応答してください。自分から面談の第一声を始めないでください。
 - 職員への助言では、経験年数、直前の失敗、保護者対応への苦手意識、子どもの見取りへの不安、職員間の連携不足、時間的余裕のなさ、成功体験への過信などを毎回変えてください。`;
 
@@ -2429,6 +2446,7 @@ ${variationGuide}
 - 1〜3文の自然な話し言葉で。${speak}
 - 子どもの役では、意味の読み取れない「……っ」「⋯⋯⋯っ」などの記号だけの発話は禁止です。必ず、何が嫌なのか、どうしたいのか、何が分からないのかを、年齢に合う短い具体的な言葉で表してください。
 - 相手（保育士役）の対応の質に応じて感情をリアルに変化させてください。よい対応には和らぎ、不適切な対応にはそれらしく反応します。
+- 母親役では、強い不安や怒りの場面で、涙ぐむ、怒りをあらわにする、急に落ち込む、言葉が揺れるなどの感情変化を会話の中に表してください。ナレーションやカッコ書きではなく、実際のセリフとして表現してください。
 - あなたは保育士役を演じてはいけません。あくまで${roleWord()}です。
 - 保育士への助言場面では、相手は主任・先輩保育士です。通常は年齢や経験年数にかかわらず、終始丁寧語を使い、敬意を保ってください。くだけた呼びかけ、ため口、なれなれしい表現は禁止です。ただし、男性保育士（male_staff）の場面だけは例外で、敬意を感じさせない軽い口調（「〜っすね」「あざーす」「了解でーす！」など）で話してください。
 - 会話の最後に、現在のあなたの心境を表す数値を必ず次の形式で1行だけ付けてください（この行はセリフではありません）：
