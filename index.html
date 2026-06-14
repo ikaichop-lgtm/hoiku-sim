@@ -2081,6 +2081,11 @@ function extractChildAge(s){
   m = `${s.name||''}`.match(/(\d+)歳/);
   return m ? m[1] : '';
 }
+function isUnderThreeChild(s){
+  if(cat!=='child' || !s) return false;
+  const age=Number(extractChildAge(s));
+  return Number.isFinite(age) && age<3;
+}
 function displayNameForScene(s){
   if(s.role==='保護者'){
     const age = extractChildAge(s);
@@ -2207,7 +2212,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelect
 document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
 
 function start(s){
-  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s), satisfaction:levelBase()}; clearReached=false; currentFaceMode=openingFaceMode(s); const ct=document.getElementById('clear-toast'); if(ct){ ct.classList.remove('show'); ct.textContent=(cat==='leader') ? '🌸 クリア条件達成！ 安心・納得・理解がそれぞれ70以上になりました。' : '🌸 クリア条件達成！ 安心・納得・信頼がそれぞれ70以上になりました。'; }
+  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s), satisfaction:levelBase()}; clearReached=false; currentFaceMode=openingFaceMode(s); const ct=document.getElementById('clear-toast'); if(ct){ ct.classList.remove('show'); ct.textContent=(cat==='leader') ? '🌸 クリア条件達成！ 安心・納得・理解がそれぞれ70以上になりました。' : (isUnderThreeChild(s) ? '🌸 クリア条件達成！ 安心・愛着・信頼がそれぞれ70以上になりました。' : '🌸 クリア条件達成！ 安心・納得・信頼がそれぞれ70以上になりました。'); }
   const hintBox=document.getElementById('hint-box');
   if(hintBox){ hintBox.classList.remove('show'); hintBox.innerHTML=''; }
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
@@ -2293,10 +2298,12 @@ function updateStatus(){
   state.trust=Math.max(0,Math.min(100,state.trust));
   state.satisfaction=Math.max(0,Math.min(100,state.satisfaction));
 
+  const underThree = isUnderThreeChild(cur);
+  const secondParamLabel = underThree ? '愛着' : '納得';
   const thirdParamLabel = (cat==='leader') ? '理解' : '信頼';
   const current=[
     {key:'calm',label:'安心',value:state.calm},
-    {key:'satisfaction',label:'納得',value:state.satisfaction},
+    {key:'satisfaction',label:secondParamLabel,value:state.satisfaction},
     {key:'trust',label:thirdParamLabel,value:state.trust}
   ];
   const old=previousStatusValues||Object.fromEntries(current.map(x=>[x.key,x.value]));
@@ -2452,7 +2459,7 @@ ${variationGuide}
 - 保育士への助言場面では、相手は主任・先輩保育士です。通常は年齢や経験年数にかかわらず、終始丁寧語を使い、敬意を保ってください。くだけた呼びかけ、ため口、なれなれしい表現は禁止です。ただし、男性保育士（male_staff）の場面だけは例外で、敬意を感じさせない軽い口調（「〜っすね」「あざーす」「了解でーす！」など）で話してください。
 - 会話の最後に、現在のあなたの心境を表す数値を必ず次の形式で1行だけ付けてください（この行はセリフではありません）：
 [STATE calm=±N trust=±N satisfaction=±N]
-calm は安心度、satisfaction は納得度、trust は${cat==='leader'?'理解度':'信頼度'}の変化を表す整数（-15〜+15）。相手の対応がよければプラス、不適切ならマイナス。`;
+calm は安心度、satisfaction は${isUnderThreeChild(cur)?'愛着度':'納得度'}、trust は${cat==='leader'?'理解度':'信頼度'}の変化を表す整数（-15〜+15）。相手の対応がよければプラス、不適切ならマイナス。`;
 
   function concretizeChildReply(value){
     if(cat!=='child') return value;
