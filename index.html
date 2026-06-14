@@ -1753,6 +1753,37 @@ function figureFor(s, calm){
   return FIGURES[key+'_'+mood] || FIGURES[t+'_'+mood] || (mood==='mid' ? (FIGURES[key+'_low'] || FIGURES[t+'_low']) : '');
 }
 let currentFaceMode='';
+let faceResponseCount=0;
+let faceLastChangedAt=0;
+
+// 表情がセリフ1つで急変しないよう、現在の感情から自然な段階を踏ませる
+function resolveNaturalFaceMode(detected, isOpening=false){
+  const current=currentFaceMode || openingFaceMode(cur);
+  if(isOpening) return current; // 最初の立ち絵と最初のセリフの表情を一致させる
+  if(!detected) return fallbackFaceMode() || current;
+  if(detected===current) return current;
+
+  // 表情を変えた直後は、最低1回は同じ表情を保つ
+  if(faceResponseCount-faceLastChangedAt<1) return current;
+
+  // 泣き顔と怒り顔の直接切替を避け、いったん不安・困り顔を挟む
+  if((current==='cry' && detected==='angry') || (current==='angry' && detected==='cry')) return 'low';
+
+  // 強い感情から急に笑顔へ飛ばず、中間表情を挟む
+  if((current==='cry' || current==='angry' || current==='low') && detected==='high') return 'mid';
+  if(current==='high' && (detected==='cry' || detected==='angry')) return 'mid';
+
+  return detected;
+}
+
+function setNaturalFaceMode(detected, isOpening=false){
+  const next=resolveNaturalFaceMode(detected,isOpening);
+  if(next && next!==currentFaceMode){
+    currentFaceMode=next;
+    faceLastChangedAt=faceResponseCount;
+  }
+}
+
 function openingFaceMode(s){
   if(!s) return '';
   if(s.role==='保護者'){
@@ -2341,7 +2372,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelect
 document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
 
 function start(s){
-  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s), satisfaction:levelBase()}; clearReached=false; currentFaceMode=openingFaceMode(s); const ct=document.getElementById('clear-toast'); if(ct){ ct.classList.remove('show'); ct.textContent=(cat==='leader') ? '🌸 クリア条件達成！ 安心・納得・理解がそれぞれ70以上になりました。' : (isUnderThreeChild(s) ? '🌸 クリア条件達成！ 安心・愛着・信頼がそれぞれ70以上になりました。' : '🌸 クリア条件達成！ 安心・納得・信頼がそれぞれ70以上になりました。'); }
+  cur=s; turns=0; history=[]; state={trust:levelBase(), calm:initialCalmFor(s), satisfaction:levelBase()}; clearReached=false; currentFaceMode=openingFaceMode(s); faceResponseCount=0; faceLastChangedAt=0; const ct=document.getElementById('clear-toast'); if(ct){ ct.classList.remove('show'); ct.textContent=(cat==='leader') ? '🌸 クリア条件達成！ 安心・納得・理解がそれぞれ70以上になりました。' : (isUnderThreeChild(s) ? '🌸 クリア条件達成！ 安心・愛着・信頼がそれぞれ70以上になりました。' : '🌸 クリア条件達成！ 安心・納得・信頼がそれぞれ70以上になりました。'); }
   const hintBox=document.getElementById('hint-box');
   if(hintBox){ hintBox.classList.remove('show'); hintBox.innerHTML=''; }
   audioUnlocked=true;   // 場面のタップ＝ユーザー操作。最初のセリフから自動読み上げ可
@@ -2686,14 +2717,9 @@ calm は安心度、satisfaction は${isUnderThreeChild(cur)?'愛着度':'納得
     }
     const text=concretizeChildReply(reply||'…');
     const detectedFace = detectFaceModeFromText(text);
-    if(isOpening){
-      // 導入時は、困り感のある表情から開始し、最初から笑顔・得意げな表情にはしない
-      currentFaceMode = (detectedFace==='cry' || detectedFace==='angry' || detectedFace==='low' || detectedFace==='mid')
-        ? detectedFace
-        : openingFaceMode(cur);
-    }else{
-      currentFaceMode = detectedFace || fallbackFaceMode() || currentFaceMode;
-    }
+    faceResponseCount++;
+    // 開始時の表情は最初のセリフ中も維持し、その後も段階的に変化させる
+    setNaturalFaceMode(detectedFace, isOpening);
     const bubble=add('them',text);
     history.push({role:'them',content:text});
     updateStatus();
