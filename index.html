@@ -227,7 +227,6 @@ header{margin:6px 0 14px;padding:26px 12px 18px;border-radius:28px;background:rg
 header img{max-width:min(82%,360px)!important;height:auto!important;filter:drop-shadow(0 8px 14px rgba(239,143,136,.16));}
 header p{font-size:17px!important;line-height:1.7!important;margin-top:10px!important;color:#6f584d!important;}
 .src{font-size:13.5px!important;color:#9b8072!important;}
-#visitor-counter{display:none!important;}
 .panel,.card,.chatbox,.result{background:rgba(255,253,248,.88);border:1.5px solid rgba(242,207,194,.92);border-radius:22px;box-shadow:var(--shadow);}
 #key-panel{padding:20px!important;margin:14px 0 0!important;}
 #key-panel b{font-size:18px;display:block;margin-bottom:8px;}
@@ -1420,11 +1419,6 @@ body.composer-open{overflow:hidden;}
   
 </header>
 
-<div id="visitor-counter" style="text-align:center;margin:-6px 0 18px">
-  <span style="font-size:13px;color:var(--soft)">🌼 あなたは </span>
-  <span id="counter-digits" style="display:inline-block;background:#2a2018;color:#7CFC9A;font-family:'Courier New',monospace;font-weight:bold;font-size:20px;letter-spacing:4px;padding:4px 12px;border-radius:6px;border:2px solid #b9a98a;box-shadow:inset 0 0 8px rgba(0,0,0,.6);vertical-align:middle">- - - -</span>
-  <span style="font-size:13px;color:var(--soft)"> 人目の保育士です 🌼</span>
-</div>
 
 <div id="key-panel" class="panel" style="padding:16px;margin-bottom:16px">
   <b>🔑 APIキーの設定</b>
@@ -2001,7 +1995,10 @@ const S = {
      persona:'あなたは4歳さなの母親。園から個人面談で話があると聞き、「何か問題があるのでは」と緊張している。否定的な言葉や診断を連想させる決めつけには強く不安になる。まず良さや育ちを伝え、観察した事実、園で行っている配慮、家庭での様子を尋ねながら今後の見守り方を一緒に考えてもらえると安心する。'},
     {id:'i9',name:'ゆうまくんのお母さん',role:'保護者',title:'反応が薄い保護者との面談',desc:'保育士から働きかけても返答が短く、会話が広がりにくい保護者とのやりとり',goal:'沈黙を急かさず、答えやすい問いかけで少しずつ思いを引き出す',
      av:{sex:'f',f:'awkward',hairColor:'#4a3a2a'},
-     persona:'あなたは4歳ゆうまの母親。個人面談に来ているが、緊張や疲れ、保育園に何を話せばよいのか分からない気持ちがあり、保育士の働きかけに対して「はい」「特にありません」「そうですか」など反応が薄い。質問を重ねて急かされたり、沈黙を否定的に受け取られたりすると、さらに口数が減る。安心できる雰囲気の中で、園での具体的な姿を伝えられ、選択肢のある答えやすい問いや十分な間を示されると、少しずつ家庭での様子や気持ちを話し始める。'}
+     persona:'あなたは4歳ゆうまの母親。個人面談に来ているが、緊張や疲れ、保育園に何を話せばよいのか分からない気持ちがあり、保育士の働きかけに対して「はい」「特にありません」「そうですか」など反応が薄い。質問を重ねて急かされたり、沈黙を否定的に受け取られたりすると、さらに口数が減る。安心できる雰囲気の中で、園での具体的な姿を伝えられ、選択肢のある答えやすい問いや十分な間を示されると、少しずつ家庭での様子や気持ちを話し始める。'},
+    {id:'i10',name:'りおちゃんのお母さん',role:'保護者',title:'虐待が疑われる保護者への対応',desc:'繰り返す不自然な傷や子どもの不安な言葉について、観察した事実を慎重に共有する面談',goal:'決めつけや追及を避けながら子どもの安全を最優先にし、保護者の孤立を防ぎつつ組織的な支援につなげる',
+     av:{sex:'f',f:'worried',hairColor:'#3a2d22'},
+     persona:'あなたは4歳りおの母親。最近、子どもの腕や背中に理由のはっきりしないあざが繰り返し見られ、子どもが「怒らせるとこわい」「家に帰りたくない」と話したことから、園が個人面談を設定した。あなたは育児と仕事で余裕がなく、責められるのではないかと強く警戒している。最初から「虐待ですよね」と決めつけられたり、問い詰められたりすると、「転んだだけです」「うちのことに口を出さないでください」と怒り、防御的になり、場合によっては涙を流して情緒が不安定になる。保育士が、子どもに見られた傷や言葉を評価や断定を交えず具体的な事実として伝え、家庭の大変さも受け止めながら、子どもの安全を最優先に一緒に考える姿勢を示すと、少しずつ生活の苦しさや、感情的になってしまうことを話し始める。ただし、簡単には全てを認めず、会話の途中で怒り、否定、沈黙、涙が揺れ動く。秘密を約束するよう求めることがあるが、園が子どもの安全のために職員間や関係機関と連携する可能性を誠実に説明されると、すぐには納得しなくても話を聞こうとする。'}
 
   ],
   child:[
@@ -2193,44 +2190,6 @@ initKeyPanel();
   modal.onclick=(e)=>{ if(e.target===modal) modal.classList.remove('open'); };
 })();
 
-// ============================================================
-//  訪問者カウンター（無料サービスを利用。1つ目が失敗したら2つ目へ）
-// ============================================================
-(function initVisitorCounter(){
-  const el=document.getElementById('counter-digits');
-  if(!el) return;
-  // このシミュレーター専用のユニークなキー（他と衝突しないよう固有の文字列に）
-  const KEY='hoiku_kakehashi_sim_visits_2026';
-  function show(n){
-    // 7セグ風に右詰めゼロ埋め（最低4桁）
-    const s=String(n);
-    el.textContent=(s.length<4 ? s.padStart(4,'0') : s).split('').join(' ');
-  }
-  // 二重カウント防止：同一セッションでは1回だけ+1
-  const hitOnce = !sessionStorage.getItem('hoiku_counted');
-  const endpoints=[
-    'https://countapi.mileshilliard.com/api/v1/'+(hitOnce?'hit':'get')+'/'+KEY,
-    'https://api.countapi.xyz/'+(hitOnce?'hit':'get')+'/hoiku-kakehashi/'+KEY
-  ];
-  (async()=>{
-    for(const url of endpoints){
-      try{
-        const r=await fetch(url,{cache:'no-store'});
-        if(!r.ok) continue;
-        const j=await r.json();
-        const val=(typeof j.value==='number')?j.value:(typeof j.count==='number'?j.count:null);
-        if(val!=null){
-          show(val);
-          try{ sessionStorage.setItem('hoiku_counted','1'); }catch(e){}
-          return;
-        }
-      }catch(e){ /* 次のサービスへ */ }
-    }
-    // すべて失敗したらカウンター部分をそっと隠す（本体に影響させない）
-    const wrap=document.getElementById('visitor-counter');
-    if(wrap) wrap.style.display='none';
-  })();
-})();
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;renderCards();});
 document.querySelectorAll('.level-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level;});
 
