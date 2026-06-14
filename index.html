@@ -1481,6 +1481,35 @@ body.composer-open{overflow:hidden;}
   .start-terms-check{font-size:13.5px;}
 }
 
+/* 利用規約チェック欄：APIキー入力欄向けの共通指定を打ち消す */
+#key-panel .start-terms-check{
+  display:grid!important;
+  grid-template-columns:24px minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:10px!important;
+  width:100%!important;
+}
+#key-panel .start-terms-check input[type="checkbox"]{
+  width:21px!important;
+  min-width:21px!important;
+  max-width:21px!important;
+  height:21px!important;
+  padding:0!important;
+  margin:2px 0 0!important;
+  border-radius:4px!important;
+  flex:none!important;
+}
+#key-panel .start-terms-check span{
+  display:block!important;
+  min-width:0!important;
+  width:auto!important;
+  writing-mode:horizontal-tb!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:anywhere!important;
+  text-align:left!important;
+}
+
 </style>
 </head>
 <body class="step-start">
